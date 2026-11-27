@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
 import { ReviewText } from "@/components/ui/ReviewText";
 import { Score } from "@/components/ui/Score";
 import type { HospitalReview } from "@/lib/data/types";
+import { hospitalHref } from "@/lib/hospitals";
 
 export function HospitalCard({ review }: { review: HospitalReview }) {
   const overall = review.scores[review.scores.length - 1];
@@ -16,7 +18,9 @@ export function HospitalCard({ review }: { review: HospitalReview }) {
             {review.trackRaw && <Chip>{review.trackRaw}</Chip>}
             {review.departmentRaw && <Chip>{review.departmentRaw}</Chip>}
           </div>
-          <h3 className="text-lg font-bold break-words">{review.hospital}</h3>
+          <h3 className="text-lg font-bold break-words">
+            <Link href={hospitalHref(review.hospital)} className="underline decoration-2 underline-offset-4">{review.hospital}</Link>
+          </h3>
         </>
       }
     >
