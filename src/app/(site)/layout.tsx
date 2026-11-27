@@ -2,6 +2,7 @@ import Link from "next/link";
 import { signOut } from "@/auth";
 import { loginRequired } from "@/lib/auth/allowed";
 import { requireStudent } from "@/lib/auth/session";
+import { mongoConfigured } from "@/lib/entries";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <header className="flex flex-wrap items-center gap-x-6 gap-y-2 py-4">
         <Link href="/" className="font-display text-2xl font-bold">จบแล้วไปไหน</Link>
         <nav className="flex flex-wrap gap-2 text-sm font-semibold">
-          {NAV.map(([href, label]) => (
+          {[...NAV, ...(mongoConfigured(process.env) ? [["/contribute", "เพิ่มรีวิว"] as const] : [])].map(([href, label]) => (
             <Link key={href} href={href} className="rounded-full border-2 border-ink bg-white px-3 py-1 hover:bg-graduate">
               {label}
             </Link>
