@@ -33,3 +33,14 @@ test("an unknown step shows the plain roadmap", () => {
   view("nonsense");
   expect(screen.queryByRole("dialog")).toBeNull();
 });
+
+test("the pop-up sits in the middle and stops the page scrolling behind it", () => {
+  const { unmount } = view("lottery");
+  const dialog = screen.getByRole("dialog");
+  expect(dialog.parentElement!.className).toContain("items-center");
+  expect(dialog.parentElement!.className).toContain("justify-center");
+  expect(dialog.className).not.toContain("right-0");
+  expect(document.body.style.overflow).toBe("hidden");
+  unmount();
+  expect(document.body.style.overflow).toBe("");
+});

@@ -33,12 +33,20 @@ export function RoadmapView({ stepId, electives, hospitals }: { stepId?: string;
           <p className="text-muted">{ABOUT[step.stage]}</p>
           {content.electives.length > 0 && <Link href="/electives" className="block text-sm font-semibold underline">ค้นหาและกรองรีวิว Elective ทั้งหมด</Link>}
           {content.hospitals.length > 0 && <Link href="/hospitals" className="block text-sm font-semibold underline">ค้นหาและกรองโรงพยาบาลใช้ทุน</Link>}
-          {content.hospitals.map((r) => (
-            <HospitalCard key={r.id} review={r} />
-          ))}
-          {content.electives.map((r) => (
-            <ElectiveCard key={r.id} review={r} />
-          ))}
+          {content.hospitals.length > 0 && (
+            <div className="grid auto-rows-fr gap-4 sm:grid-cols-2">
+              {content.hospitals.map((r) => (
+                <HospitalCard key={r.id} review={r} />
+              ))}
+            </div>
+          )}
+          {content.electives.length > 0 && (
+            <div className="grid items-start gap-4 sm:grid-cols-2">
+              {content.electives.map((r) => (
+                <ElectiveCard key={r.id} review={r} />
+              ))}
+            </div>
+          )}
           {!signpost && content.electives.length + content.hospitals.length === 0 && <Empty>รอข้อมูล</Empty>}
         </StepPanel>
       )}
