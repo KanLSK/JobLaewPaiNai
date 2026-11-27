@@ -1,4 +1,4 @@
-import { destroy, saveEdit, setStatus, toForm } from "@/lib/admin/moderate";
+import { CHANGED, destroy, saveEdit, setStatus, toForm } from "@/lib/admin/moderate";
 import { buildAliases } from "@/lib/data/aliases";
 import { memoryStore } from "@/lib/entries/memory";
 
@@ -42,4 +42,17 @@ test("an entry deleted elsewhere is reported and never recreated", async () => {
   expect((await saveEdit(store, aliases, id, form)).message).toBe("ไม่พบรายการนี้แล้ว");
   expect(await destroy(store, id)).toBe(false);
   expect([await store.count("pending"), await store.count("approved")]).toEqual([0, 0]);
+});
+
+test("an out-of-date screen cannot undo a redaction made elsewhere", async () => {
+  const { store, id, form: stale } = await seed();
+  await saveEdit(store, aliases, id, { ...stale, section0: "ลบชื่อแล้ว" });
+  expect(await saveEdit(store, aliases, id, stale)).toMatchObject({ ok: false, message: CHANGED });
+  expect((await store.get(id))!.data).toMatchObject({ sections: [{ text: "ลบชื่อแล้ว" }, {}] });
+});
+
+test("an entry taken down elsewhere is not republished from an out-of-date screen", async () => {
+  const { store, id, form: stale } = await seed();
+  await setStatus(store, id, "rejected");
+  expect((await saveEdit(store, aliases, id, stale)).message).toBe(CHANGED);
 });

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { SPECIALTIES, TRACKS } from "@/config/pathway";
 import { canonical, type Aliases } from "@/lib/data/aliases";
 import type { ElectiveReview, HospitalReview, NoteEntry, Score } from "@/lib/data/types";
@@ -7,7 +8,17 @@ import { fields, type Field } from "./fields";
 
 export const GONE = "ไม่พบรายการนี้แล้ว";
 
-export const toForm = (entry: Entry): Record<string, string> => Object.fromEntries(fields(entry).map((f) => [f.name, f.value]));
+export const CHANGED = "รายการนี้ถูกแก้ไขที่อื่นแล้ว ยังไม่ได้บันทึก กรุณาตรวจข้อความล่าสุดแล้วทำใหม่";
+
+/** Changes whenever what an approval screen shows would change. */
+export const versionOf = (entry: Entry) =>
+  createHash("sha256").update(JSON.stringify([entry.status, fields(entry).map((f) => [f.name, f.value])])).digest("hex");
+
+/** What an untouched approval screen sends back. */
+export const toForm = (entry: Entry): Record<string, string> => ({
+  ...Object.fromEntries(fields(entry).map((f) => [f.name, f.value])),
+  version: versionOf(entry),
+});
 
 export const setStatus = (store: EntryStore, id: string, status: Status) => store.update(id, { status });
 
@@ -82,6 +93,8 @@ export async function saveEdit(
 ): Promise<{ ok: boolean; message: string; errors?: FieldErrors }> {
   const entry = await store.get(id);
   if (!entry) return { ok: false, message: GONE };
+  // An older screen would write its old text back over a redaction.
+  if (form.version !== versionOf(entry)) return { ok: false, message: CHANGED };
   const { changed, errors } = changes(entry, form);
   if (Object.keys(errors).length) return { ok: false, message: "ยังไม่ได้บันทึก กรุณาตรวจช่องที่ระบุ", errors };
   if (!Object.keys(changed).length) return { ok: true, message: "บันทึกแล้ว" };

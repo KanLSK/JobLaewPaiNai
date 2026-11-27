@@ -14,6 +14,7 @@ interface Props {
   status: Status;
   heading: string;
   fields: Field[];
+  version: string;
 }
 
 const box = "mt-1 w-full min-w-0 rounded-xl border-2 border-ink bg-white px-3 py-2";
@@ -25,10 +26,11 @@ const Marked = ({ text }: { text: string }) => (
   </>
 );
 
-export function EntryEditor({ action, id, status, heading, fields }: Props) {
+export function EntryEditor({ action, id, status, heading, fields, version }: Props) {
   const [state, send, pending] = useActionState(action, null);
   const errors = state?.errors ?? {};
-  const value = (f: Field) => (state && !state.ok ? (state.values[f.name] ?? f.value) : f.value);
+  // Typed text is restored only while the entry is still the one it was typed over.
+  const value = (f: Field) => (state && !state.ok && state.values.version === version ? (state.values[f.name] ?? f.value) : f.value);
   const shown = (f: Field) => (f.type === "choice" ? (f.options!.find((o) => o.value === f.value)?.label ?? f.value) : f.value);
   const act = (intent: string, label: string, color = "bg-white", ask?: string) => (
     <button
@@ -56,8 +58,9 @@ export function EntryEditor({ action, id, status, heading, fields }: Props) {
           </div>
         ))}
       </dl>
-      <form key={state?.attempt ?? 0} action={send} className="space-y-3">
+      <form key={`${version}-${state?.attempt ?? 0}`} action={send} className="space-y-3">
         <input type="hidden" name="id" value={id} />
+        <input type="hidden" name="version" value={version} />
         {state && <p role="status" className={`font-semibold ${state.ok ? "" : "text-red-700"}`}>{state.message}</p>}
         {/* Closed or open, these are sent with the buttons below. */}
         <details open={Object.keys(errors).length > 0}>

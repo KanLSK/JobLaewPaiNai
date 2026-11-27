@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EntryEditor } from "@/components/admin/EntryEditor";
 import { fields } from "@/lib/admin/fields";
+import { versionOf } from "@/lib/admin/moderate";
 import { adminPassword, isAdmin } from "@/lib/admin/session";
 import { requireStudent } from "@/lib/auth/session";
 import { getStore, mongoConfigured } from "@/lib/entries";
@@ -82,7 +83,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </form>
       {found.length === 0 && <p className="text-muted">ไม่มีรายการ</p>}
       {found.slice((at - 1) * PAGE, at * PAGE).map((e) => (
-        <EntryEditor key={e.id} action={moderate} id={e.id} status={status} heading={heading(e)} fields={fields(e)} />
+        <EntryEditor key={e.id} action={moderate} id={e.id} status={status} heading={heading(e)} fields={fields(e)} version={versionOf(e)} />
       ))}
       {pages > 1 && (
         <p className="flex justify-between text-sm font-semibold">

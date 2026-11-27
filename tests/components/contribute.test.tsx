@@ -17,7 +17,7 @@ test("the page says so while the database is not set up", async () => {
 test("three forms, a consent box, and hospital suggestions", () => {
   render(<ContributeForm action={async () => null} hospitals={["ศิริราช"]} initialKind="elective" />);
   for (const tab of ["Elective", "โรงพยาบาลใช้ทุน", "เส้นทางอื่น"]) expect(screen.getByRole("button", { name: tab })).toBeTruthy();
-  expect(screen.getByText(/ไม่มีชื่อบุคคล เบอร์ติดต่อ หรือข้อมูลผู้ป่วย/)).toBeTruthy();
+  expect(screen.getAllByText(/ไม่มีชื่อบุคคล เบอร์ติดต่อ หรือข้อมูลผู้ป่วย/)).toHaveLength(3); // one per form
   const hospital = screen.getByRole("combobox", { name: /โรงพยาบาล/ }) as HTMLInputElement;
   expect(hospital.required).toBe(true);
   expect(document.getElementById(hospital.getAttribute("list")!)!.innerHTML).toContain("ศิริราช");
@@ -28,4 +28,13 @@ test("three forms, a consent box, and hospital suggestions", () => {
 test("a link from the roadmap preselects the step", () => {
   render(<ContributeForm action={async () => null} hospitals={[]} initialKind="hospital" initialStep="lottery" />);
   expect((screen.getByRole("combobox", { name: /Track/ }) as HTMLSelectElement).value).toBe("lottery");
+});
+
+test("typed text survives a look at another tab", () => {
+  render(<ContributeForm action={async () => null} hospitals={[]} initialKind="elective" />);
+  const review = () => screen.getByRole("textbox", { name: "รีวิว Elective" }) as HTMLTextAreaElement;
+  fireEvent.change(review(), { target: { value: "เขียนยาวมาก" } });
+  fireEvent.click(screen.getByRole("button", { name: "เส้นทางอื่น" }));
+  fireEvent.click(screen.getByRole("button", { name: "Elective" }));
+  expect(review().value).toBe("เขียนยาวมาก");
 });

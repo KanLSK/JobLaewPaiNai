@@ -51,3 +51,12 @@ test("unpublishing works whatever is typed", async () => {
   await expect(post({ ...toForm(entry), id, intent: "unpublish", title: "" })).rejects.toThrow("done=unpublished");
   expect((await store.get(id))!.status).toBe("rejected");
 });
+
+test("approving from an out-of-date screen changes nothing", async () => {
+  cookie = makeToken(password);
+  const { id, entry } = await seed();
+  const stale = toForm(entry);
+  await post({ ...stale, id, intent: "save", text: "ลบเบอร์แล้ว" });
+  expect(await post({ ...stale, id, intent: "approve" })).toMatchObject({ ok: false });
+  expect(await store.get(id)).toMatchObject({ status: "pending", data: { text: "ลบเบอร์แล้ว" } });
+});

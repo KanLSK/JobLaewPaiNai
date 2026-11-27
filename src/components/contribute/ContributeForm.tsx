@@ -24,20 +24,44 @@ interface Props {
   initialStep?: string;
 }
 
-export function ContributeForm({ action, hospitals, initialKind, initialStep }: Props) {
+export function ContributeForm(props: Props) {
+  const [kind, setKind] = useState<Kind>(props.initialKind);
+  return (
+    <>
+      <div className="mb-4 flex flex-wrap gap-2">
+        {TABS.map(([id, label]) => (
+          <button key={id} type="button" aria-pressed={kind === id} onClick={() => setKind(id)} className={`${button} ${kind === id ? "bg-graduate" : "bg-white"}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <datalist id="hospital-names">
+        {props.hospitals.map((name) => (
+          <option key={name} value={name} />
+        ))}
+      </datalist>
+      {/* All three stay on the page, so looking at another tab loses nothing. */}
+      {TABS.map(([id]) => (
+        <div key={id} hidden={kind !== id}>
+          <KindForm {...props} kind={id} initialStep={id === props.initialKind ? props.initialStep : undefined} />
+        </div>
+      ))}
+    </>
+  );
+}
+
+function KindForm({ action, kind, initialStep }: Props & { kind: Kind }) {
   const [state, send, pending] = useActionState(action, null);
-  const [kind, setKind] = useState<Kind>(initialKind);
   const [sent, setSent] = useState(0);
 
-  const mine = state?.kind === kind ? state : null;
-  const failed = mine && !mine.ok ? mine : null;
-  const done = mine?.ok && mine.attempt !== sent;
+  const failed = state && !state.ok ? state : null;
+  const done = state?.ok && state.attempt !== sent;
   const errors = failed?.errors ?? {};
   const value = (name: string, start = "") => failed?.values[name] ?? start;
 
   const field = (name: string, label: string, control: React.ReactNode, hint?: string) => (
     <div>
-      <label htmlFor={name} className="mb-1 block font-semibold">{label}</label>
+      <label htmlFor={`${kind}-${name}`} className="mb-1 block font-semibold">{label}</label>
       {control}
       {hint && <p className="text-xs text-muted">{hint}</p>}
       {errors[name] && <p role="alert" className="text-sm font-semibold text-red-700">{errors[name]}</p>}
@@ -45,14 +69,14 @@ export function ContributeForm({ action, hospitals, initialKind, initialStep }: 
   );
   // No maxLength: a long paste must be reported, not silently cut.
   const input = (name: string, label: string, required = false, hint?: string, list?: string) =>
-    field(name, label, <input id={name} name={name} required={required} list={list} defaultValue={value(name)} className={box} />, hint ?? `ไม่เกิน ${SHORT} ตัวอักษร`);
+    field(name, label, <input id={`${kind}-${name}`} name={name} required={required} list={list} defaultValue={value(name)} className={box} />, hint ?? `ไม่เกิน ${SHORT} ตัวอักษร`);
   const area = (name: string, label: string, required = false) =>
-    field(name, label, <textarea id={name} name={name} required={required} rows={5} defaultValue={value(name)} className={box} />, `ไม่เกิน ${LONG} ตัวอักษร`);
+    field(name, label, <textarea id={`${kind}-${name}`} name={name} required={required} rows={5} defaultValue={value(name)} className={box} />, `ไม่เกิน ${LONG} ตัวอักษร`);
   const select = (name: string, label: string, options: { value: string; label: string }[], required = false, start = "") =>
     field(
       name,
       label,
-      <select id={name} name={name} required={required} defaultValue={value(name, start)} className={box}>
+      <select id={`${kind}-${name}`} name={name} required={required} defaultValue={value(name, start)} className={box}>
         <option value="">{required ? "เลือก…" : "ไม่ระบุ"}</option>
         {options.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>
@@ -63,35 +87,18 @@ export function ContributeForm({ action, hospitals, initialKind, initialStep }: 
     select(name, `${label} (1–5)`, [1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: String(n) })), required);
   const steps = (list: { id: string; label: string }[]) => list.map((s) => ({ value: s.id, label: s.label }));
   const departments = [...steps(SPECIALTIES), { value: "other", label: "อื่นๆ" }];
-  const hospital = (
-    <>
-      {input("hospital", "โรงพยาบาล", true, "พิมพ์หรือเลือกจากรายการ", "hospital-names")}
-      <datalist id="hospital-names">
-        {hospitals.map((name) => (
-          <option key={name} value={name} />
-        ))}
-      </datalist>
-    </>
-  );
+  const hospital = input("hospital", "โรงพยาบาล", true, "พิมพ์หรือเลือกจากรายการ", "hospital-names");
 
   return (
     <>
-      <div className="mb-4 flex flex-wrap gap-2">
-        {TABS.map(([id, label]) => (
-          <button key={id} type="button" aria-pressed={kind === id} onClick={() => setKind(id)} className={`${button} ${kind === id ? "bg-graduate" : "bg-white"}`}>
-            {label}
-          </button>
-        ))}
-      </div>
-
       {done ? (
         <div role="status" className="space-y-3 rounded-2xl border-2 border-ink bg-white p-4">
           <p className="font-bold">ได้รับแล้ว รอตรวจสอบ ขอบคุณครับ</p>
-          <button type="button" onClick={() => setSent(mine.attempt)} className={`${button} bg-white`}>ส่งอีกรายการ</button>
+          <button type="button" onClick={() => setSent(state.attempt)} className={`${button} bg-white`}>ส่งอีกรายการ</button>
         </div>
       ) : (
         // Remounted for every reply, so the typed values come back after React resets the form.
-        <form key={`${kind}-${state?.attempt ?? 0}`} action={send} className="space-y-4">
+        <form key={state?.attempt ?? 0} action={send} className="space-y-4">
           <input type="hidden" name="kind" value={kind} />
           <div aria-hidden className="absolute -left-[9999px]">
             <label>

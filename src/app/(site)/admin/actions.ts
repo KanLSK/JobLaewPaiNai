@@ -52,7 +52,10 @@ export async function moderate(previous: EditorState, formData: FormData): Promi
     // Approving stores what is on screen first, so an unsaved edit is never lost.
     if (intent === "save" || intent === "approve") {
       const saved = await saveEdit(store, await loadAliases(), id, form);
-      if (!saved.ok && saved.message !== GONE) return failed(saved.message, saved.errors);
+      if (!saved.ok && saved.message !== GONE) {
+        revalidatePath("/admin");
+        return failed(saved.message, saved.errors);
+      }
       if (intent === "save" && saved.ok) {
         revalidatePath("/admin");
         return { attempt, ok: true, message: saved.message, errors: {}, values: {} };
