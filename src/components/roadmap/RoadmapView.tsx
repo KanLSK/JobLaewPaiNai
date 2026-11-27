@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { findStep, type StageId } from "@/config/pathway";
-import { ElectiveCard } from "@/components/reviews/ElectiveCard";
+import { ElectiveCards } from "@/components/reviews/ElectiveCards";
 import { HospitalCard } from "@/components/reviews/HospitalCard";
 import { Empty } from "@/components/reviews/Results";
 import type { ElectiveReview, HospitalReview } from "@/lib/data/types";
@@ -33,18 +33,13 @@ export function RoadmapView({ stepId, electives, hospitals }: { stepId?: string;
           <p className="text-muted">{ABOUT[step.stage]}</p>
           {content.electives.length > 0 && <Link href="/electives" className="block text-sm font-semibold underline">ค้นหาและกรองรีวิว Elective ทั้งหมด</Link>}
           {content.hospitals.length > 0 && <Link href="/hospitals" className="block text-sm font-semibold underline">ค้นหาและกรองโรงพยาบาลใช้ทุน</Link>}
-          {content.hospitals.length > 0 && (
+          {content.electives.length + content.hospitals.length > 0 && (
+            // One grid, so hospital and elective cards come out the same size.
             <div className="grid auto-rows-fr gap-4 sm:grid-cols-2">
               {content.hospitals.map((r) => (
                 <HospitalCard key={r.id} review={r} />
               ))}
-            </div>
-          )}
-          {content.electives.length > 0 && (
-            <div className="grid items-start gap-4 sm:grid-cols-2">
-              {content.electives.map((r) => (
-                <ElectiveCard key={r.id} review={r} />
-              ))}
+              <ElectiveCards reviews={content.electives} closeAllHref="/" />
             </div>
           )}
           {!signpost && content.electives.length + content.hospitals.length === 0 && <Empty>รอข้อมูล</Empty>}

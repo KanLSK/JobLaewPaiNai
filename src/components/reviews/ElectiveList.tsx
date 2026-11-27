@@ -4,7 +4,7 @@ import { useState } from "react";
 import { SPECIALTIES } from "@/config/pathway";
 import type { ElectiveReview } from "@/lib/data/types";
 import { filterElectives } from "@/lib/filter";
-import { ElectiveCard } from "./ElectiveCard";
+import { ElectiveCards } from "./ElectiveCards";
 import { FilterBar } from "./FilterBar";
 import { Results } from "./Results";
 
@@ -41,10 +41,8 @@ export function ElectiveList({ reviews }: { reviews: ElectiveReview[] }) {
           },
         ]}
       />
-      <Results total={reviews.length} shown={shown.length}>
-        {shown.map((r) => (
-          <ElectiveCard key={r.id} review={r} />
-        ))}
+      <Results total={reviews.length} shown={shown.length} equalHeights>
+        <ElectiveCards reviews={shown} />
       </Results>
     </>
   );
