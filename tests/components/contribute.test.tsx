@@ -16,7 +16,7 @@ afterEach(() => { cleanup(); vi.unstubAllEnvs(); vi.restoreAllMocks(); });
 const configured = () => { vi.stubEnv("DATA_SOURCE", "mongodb"); vi.stubEnv("MONGODB_URI", "mongodb://unused"); };
 const chooser = async (query: Record<string, string> = {}) => renderToStaticMarkup(await ContributePage({ searchParams: Promise.resolve(query) }));
 const form = (kind: "elective" | "hospital" | "note", step?: string) =>
-  render(<ContributeForm action={async () => null} hospitals={["ศิริราช"]} kind={kind} initialStep={step} />);
+  render(<ContributeForm action={async () => null} hospitals={["ศิริราช"]} topic={kind} initialStep={step} />);
 
 test("the pages say so while the database is not set up", async () => {
   vi.stubEnv("DATA_SOURCE", "");
@@ -25,11 +25,11 @@ test("the pages say so while the database is not set up", async () => {
   expect(renderToStaticMarkup(out)).toContain("ยังไม่เปิดใช้งาน");
 });
 
-test("the first page is three big choices with pictures, and no form", async () => {
+test("the first page is five big choices with pictures, and no form", async () => {
   configured();
   const out = await chooser();
-  for (const kind of ["elective", "hospital", "note"]) expect(out).toContain(`href="/contribute/${kind}"`);
-  expect(out.split("<svg").length - 1).toBe(3);
+  for (const kind of ["elective", "hospital", "extern", "resident", "note"]) expect(out).toContain(`href="/contribute/${kind}"`);
+  expect(out.split("<svg").length - 1).toBe(5);
   expect(out).toContain("aspect-square");
   expect(out).not.toContain("<form");
 });
@@ -68,4 +68,38 @@ test("going back to the choices asks first only if something was typed", () => {
   fireEvent.input(screen.getByRole("textbox", { name: "หัวข้อ" }), { target: { value: "x" } });
   expect(fireEvent.click(back)).toBe(false);
   expect(confirm).toHaveBeenCalledOnce();
+});
+
+const page = async (kind: string, step?: string) =>
+  render(<>{await ContributeKindPage({ params: Promise.resolve({ kind }), searchParams: Promise.resolve(step ? { step } : {}) })}</>);
+const options = () => [...(screen.getByRole("combobox") as HTMLSelectElement).options].map((o) => o.value).filter(Boolean);
+const hidden = (name: string) => (document.querySelector(`input[type="hidden"][name="${name}"]`) as HTMLInputElement | null)?.value;
+
+test("Extern has its own form with nothing to choose", async () => {
+  configured();
+  await page("extern");
+  expect(screen.queryByRole("combobox")).toBeNull();
+  expect([hidden("kind"), hidden("step")]).toEqual(["note", "extern"]);
+  expect(screen.getByRole("heading", { name: "Extern" })).toBeTruthy();
+});
+
+test("Resident has its own form listing only Resident and its specialties", async () => {
+  configured();
+  await page("resident", "surgery");
+  expect(options()).toHaveLength(19);
+  expect(options()).toContain("resident");
+  expect((screen.getByRole("combobox") as HTMLSelectElement).value).toBe("surgery");
+  expect(hidden("kind")).toBe("note");
+});
+
+test("the other-path form no longer offers Extern or Resident", async () => {
+  configured();
+  await page("note");
+  for (const gone of ["extern", "resident", "surgery"]) expect(options()).not.toContain(gone);
+  for (const kept of ["graduate", "own-clinic", "research"]) expect(options()).toContain(kept);
+});
+
+test.each([["extern", "/contribute/extern"], ["surgery", "/contribute/resident?step=surgery"]])("an old link for %s goes to its new form", async (step, to) => {
+  configured();
+  await expect(ContributeKindPage({ params: Promise.resolve({ kind: "note" }), searchParams: Promise.resolve({ step }) })).rejects.toThrow(`redirect:${to}`);
 });

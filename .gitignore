@@ -1,9 +1,10 @@
 node_modules
 .next
 /Data/
-# Only the cleaned review file is published; anything else made in content/ stays local.
+# Only these cleaned files are published; anything else made in content/ stays local.
 /content/*
 !/content/reviews.json
+!/content/hospital-directory.json
 .env*
 !.env.example
 .DS_Store

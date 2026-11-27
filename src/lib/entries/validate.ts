@@ -1,4 +1,4 @@
-import { CAREERS, SPECIALTIES, STAGES, TRACKS, type Step } from "@/config/pathway";
+import { CAREERS, NO_SERVICE, SPECIALTIES, STAGES, TRACKS, type Step } from "@/config/pathway";
 import { canonical, type Aliases } from "@/lib/data/aliases";
 import { HOSPITAL_SCORE_HEADERS } from "@/lib/data/columns";
 import type { Score } from "@/lib/data/types";
@@ -9,7 +9,7 @@ export const SHORT = 120;
 export const LONG = 5000;
 
 /** Elective and hospital experiences have their own forms. */
-export const NOTE_STEPS: Step[] = [...STAGES.filter((s) => s.id !== "elective"), ...TRACKS, ...SPECIALTIES, ...CAREERS];
+export const NOTE_STEPS: Step[] = [...STAGES.filter((s) => s.id !== "elective"), ...TRACKS, ...NO_SERVICE, ...SPECIALTIES, ...CAREERS];
 
 /** Reads trimmed values and collects one message per bad field. */
 function reader(form: Record<string, string>) {

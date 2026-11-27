@@ -5,8 +5,9 @@ import { useActionState, useRef, useState } from "react";
 import { SPECIALTIES, TRACKS } from "@/config/pathway";
 import { HOSPITAL_SCORE_HEADERS } from "@/lib/data/columns";
 import type { SubmitResult } from "@/lib/entries/submit";
+import { LONG, SHORT } from "@/lib/entries/validate";
+import { TOPIC_STEPS, kindOf, type Topic } from "./topics";
 import type { Kind } from "@/lib/entries/types";
-import { LONG, NOTE_STEPS, SHORT } from "@/lib/entries/validate";
 
 export type FormState = (SubmitResult & { kind: Kind; attempt: number }) | null;
 
@@ -16,11 +17,12 @@ const button = "cursor-pointer rounded-full border-2 border-ink px-4 py-2 font-s
 interface Props {
   action: (previous: FormState, formData: FormData) => Promise<FormState>;
   hospitals: string[];
-  kind: Kind;
+  topic: Topic;
   initialStep?: string;
 }
 
-export function ContributeForm({ action, hospitals, kind, initialStep }: Props) {
+export function ContributeForm({ action, hospitals, topic, initialStep }: Props) {
+  const kind = kindOf(topic);
   const [state, send, pending] = useActionState(action, null);
   const [sent, setSent] = useState(0);
   const typed = useRef(false);
@@ -132,7 +134,13 @@ export function ContributeForm({ action, hospitals, kind, initialStep }: Props) 
           )}
           {kind === "note" && (
             <>
-              {select("step", "เส้นทางหรือขั้นตอน", steps(NOTE_STEPS), true, initialStep)}
+              {topic === "extern" ? (
+                <input type="hidden" name="step" value="extern" />
+              ) : (
+                topic !== "elective" &&
+                topic !== "hospital" &&
+                select("step", topic === "resident" ? "สาขา" : "เส้นทางหรือขั้นตอน", steps(TOPIC_STEPS[topic]), true, initialStep)
+              )}
               {input("title", "หัวข้อ", true)}
               {area("text", "เล่าประสบการณ์", true)}
             </>

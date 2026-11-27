@@ -15,7 +15,7 @@ test("every node links to its step; empty ones say so and are dashed", () => {
   expect(node("extern").textContent).toContain("รอข้อมูล");
   expect(node("extern").className).toContain("border-dashed");
   expect(node("graduate").textContent).not.toContain("รอข้อมูล");
-  expect(document.querySelectorAll("[data-step]")).toHaveLength(6 + 6 + 18 + 14);
+  expect(document.querySelectorAll("[data-step]")).toHaveLength(6 + 5 + 18 + 14);
 });
 
 test("a selected step opens a labelled dialog that closes by link or Escape", () => {
@@ -58,13 +58,13 @@ test("the middle of the map follows the new flowchart", () => {
   const inside = (name: string) => [...screen.getByRole("group", { name }).querySelectorAll("[data-step]")].map((n) => n.getAttribute("data-step"));
   expect(inside("ต้นสังกัดอื่น ๆ")).toEqual(["fixed-medschool", "other-hospital", "military"]);
   expect(inside("สังกัดกระทรวงสาธารณสุข")).toEqual(["fixed-moph", "lottery"]);
-  expect(inside("ไม่ใช้ทุน (จ่ายค่าปรับ)")).toEqual(["abroad"]);
+  expect(screen.getByRole("group", { name: "ไม่ใช้ทุน (จ่ายค่าปรับ)" }).textContent).toContain("เปิดคลินิก");
   expect(screen.getByRole("group", { name: "สังกัดกระทรวงสาธารณสุข" }).textContent).toContain("ไม่สอบบอร์ด");
 });
 
 test("a step with reference material links to the guide", () => {
   view("lottery");
-  expect(screen.getByRole("link", { name: /อ่านในคู่มือ/ }).getAttribute("href")).toBe("/guide#register");
+  expect(screen.getByRole("link", { name: /อ่านในคู่มือ/ }).getAttribute("href")).toBe("/guide/service#register");
 });
 
 test("a step shows its notes", () => {
@@ -75,7 +75,7 @@ test("a step shows its notes", () => {
   expect(dialog.textContent).not.toContain("รอข้อมูล");
 });
 
-test.each([["extern", "/contribute/note?step=extern"], ["lottery", "/contribute/hospital?step=lottery"], ["elective", "/contribute/elective"]])(
+test.each([["extern", "/contribute/extern"], ["surgery", "/contribute/resident?step=surgery"], ["research", "/contribute/note?step=research"], ["lottery", "/contribute/hospital?step=lottery"], ["elective", "/contribute/elective"]])(
   "an empty %s step invites a contribution only when contributing is on",
   (step, href) => {
     const { unmount } = view(step);

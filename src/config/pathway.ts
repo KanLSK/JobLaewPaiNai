@@ -29,6 +29,13 @@ export const TRACKS: Step[] = children("intern", [
   ["abroad", "แพทย์ต่างประเทศ"],
 ]);
 
+/** Paying the fine instead of ใช้ทุน. These are not tracks: they take no hospital reviews. */
+export const NO_SERVICE: Step[] = [
+  ["private-practice", "โรงพยาบาลเอกชน"],
+  ["further-study", "เรียนต่อ"],
+  ["own-clinic", "เปิดคลินิก"],
+].map(([id, label]) => ({ id, label, stage: "intern", parentId: "no-service" }));
+
 export const SPECIALTIES: Step[] = children("resident", [
   ["pediatrics", "กุมารเวชศาสตร์"],
   ["ophthalmology", "จักษุวิทยา"],
@@ -73,7 +80,7 @@ export const ELECTIVE_DEPARTMENTS: Step[] = children("elective", [
   ["elective-other", "อื่นๆ"],
 ]);
 
-export const ALL_STEPS: Step[] = [...STAGES, ...ELECTIVE_DEPARTMENTS, ...TRACKS, ...SPECIALTIES, ...CAREERS];
+export const ALL_STEPS: Step[] = [...STAGES, ...ELECTIVE_DEPARTMENTS, ...TRACKS, ...NO_SERVICE, ...SPECIALTIES, ...CAREERS];
 
 export function findStep(id: string): Step | null {
   return ALL_STEPS.find((step) => step.id === id) ?? null;

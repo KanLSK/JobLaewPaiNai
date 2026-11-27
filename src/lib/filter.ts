@@ -1,4 +1,4 @@
-import type { ElectiveReview, HospitalReview } from "@/lib/data/types";
+import type { ElectiveReview } from "@/lib/data/types";
 
 const includes = (parts: (string | null)[], text: string | undefined) =>
   !text?.trim() || parts.join("\n").toLowerCase().includes(text.trim().toLowerCase());
@@ -19,16 +19,4 @@ export function filterElectives(
   if (q.sort === "score") out.sort((a, b) => ratio(b) - ratio(a));
   if (q.sort === "hospital") out.sort((a, b) => a.hospital.localeCompare(b.hospital, "th"));
   return out;
-}
-
-export function filterHospitals(
-  list: HospitalReview[],
-  q: { text?: string; trackId?: string; specialtyId?: string },
-): HospitalReview[] {
-  return list.filter(
-    (r) =>
-      (!q.trackId || r.trackId === q.trackId) &&
-      (!q.specialtyId || r.specialtyId === q.specialtyId) &&
-      includes([r.hospital, r.summary, r.departmentRaw, r.trackRaw], q.text),
-  );
 }

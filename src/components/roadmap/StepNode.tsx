@@ -5,12 +5,13 @@ import { STAGE_BG } from "@/components/ui/Card";
 /** Stages that only point the way and hold no reviews themselves. */
 const SIGNPOSTS = new Set(["graduate", "resident", "other"]);
 
-export function StepNode({ step, count, big = false }: { step: Step; count: number; big?: boolean }) {
+/** `base` is the page the pop-up opens on. */
+export function StepNode({ step, count, big = false, base = "/" }: { step: Step; count: number; big?: boolean; base?: string }) {
   const signpost = SIGNPOSTS.has(step.id);
   const empty = !signpost && count === 0;
   return (
     <Link
-      href={`/?step=${step.id}`}
+      href={`${base}?step=${step.id}`}
       scroll={false}
       data-step={step.id}
       className={[

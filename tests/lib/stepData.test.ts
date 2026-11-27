@@ -12,14 +12,14 @@ test("each step gets its own reviews", () => {
   expect(ids("elective")).toEqual([["e1", "e2"], []]);
   expect(ids("intern")).toEqual([[], ["h1", "h2"]]);
   expect(ids("lottery")).toEqual([[], ["h1"]]);
-  expect(ids("surgery")).toEqual([["e1"], ["h1"]]);
+  expect(ids("surgery")).toEqual([[], []]);
   for (const empty of ["extern", "graduate", "resident", "other", "research", "military", "nonsense"])
     expect(ids(empty)).toEqual([[], []]);
 });
 
 test("counts per step", () => {
   const counts = countByStep(electives, hospitals);
-  expect(counts).toMatchObject({ elective: 2, intern: 2, lottery: 1, surgery: 2, extern: 0, research: 0 });
+  expect(counts).toMatchObject({ elective: 2, intern: 2, lottery: 1, surgery: 0, extern: 0, research: 0 });
 });
 
 test("a note belongs to its step and is counted there", () => {

@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { CAREERS, ELECTIVE_DEPARTMENTS, SPECIALTIES, findStep, type Step } from "@/config/pathway";
 import { Branch } from "./Branch";
+import { NO_SERVICE_PAGE } from "./paths";
 import { StepNode } from "./StepNode";
 
 const Spine = () => <div aria-hidden className="h-10 border-l-4 border-dotted border-ink" />;
@@ -58,6 +60,12 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
     </ul>
   );
   const track = (id: string) => <StepNode step={findStep(id)!} count={counts[id] ?? 0} />;
+  /** A part of the map that has its own page. */
+  const door = (href: string, content: React.ReactNode) => (
+    <Link href={href} className={`block w-full max-w-xs rounded-2xl border-2 border-ink px-4 py-3 text-center text-sm font-semibold shadow-sticker-sm transition hover:-translate-y-0.5 bg-white`}>
+      {content}
+    </Link>
+  );
   const holds = (parent: string) => selected?.parentId === parent;
   const wards = ELECTIVE_DEPARTMENTS.filter((s) => (counts[s.id] ?? 0) > 0);
 
@@ -131,8 +139,8 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
         <section aria-label="ไม่ใช้ทุน" className="relative">
           <span aria-hidden className="absolute -top-6 left-1/2 hidden h-6 w-[3px] -translate-x-1/2 bg-ink lg:block" />
           <Group label="ไม่ใช้ทุน (จ่ายค่าปรับ)" className="bg-intern">
-            <p className="text-center text-sm">ทำงานโรงพยาบาลเอกชน, เรียนต่อ, เปิดคลินิก</p>
-            {track("abroad")}
+            <p className="text-center text-sm">แพทย์ต่างประเทศ, โรงพยาบาลเอกชน, เรียนต่อ, เปิดคลินิก</p>
+            {door("/no-service", `ดู ${NO_SERVICE_PAGE.steps.length} เส้นทาง →`)}
           </Group>
         </section>
       </div>
@@ -148,9 +156,8 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
         <section aria-label="Resident" className="relative flex flex-col items-center gap-3">
           <span aria-hidden data-wire="drop-resident" className="absolute -top-6 left-1/2 hidden h-6 w-[3px] -translate-x-1/2 bg-ink md:block" />
           {node("resident")}
-          <Branch label={`${SPECIALTIES.length} สาขา`} defaultOpen={holds("resident")}>
-            {list(SPECIALTIES, "grid grid-cols-2 gap-3")}
-          </Branch>
+          <Link href="/resident" className="text-sm font-semibold underline">ข้อมูลเรียนต่อ →</Link>
+          {list(SPECIALTIES, "grid w-full grid-cols-2 gap-3")}
         </section>
         <section aria-label="เส้นทางอื่น" className="relative flex flex-col items-center gap-3">
           <span aria-hidden data-wire="drop-other" className="absolute -top-6 left-1/2 hidden h-6 w-[3px] -translate-x-1/2 bg-ink md:block" />

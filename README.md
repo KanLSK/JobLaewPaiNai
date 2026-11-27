@@ -118,3 +118,11 @@ npm run build
 
 Pathway steps live in `src/config/pathway.ts`. A database can replace the sheet by implementing
 `ReviewRepository` in `src/lib/data/repository.ts`.
+
+## Hospital map
+
+`content/hospital-directory.json` is a one-time copy of the six region tabs of the ใช้ทุน hospital sheet (2026-11-27).
+Changes to the sheet do not appear on the site until this file is regenerated.
+Scored reviews are matched to a listed hospital by name; unmatched ones are listed under the map.
+โรงพยาบาลแม่สอด is not in the sheet: it was added by hand under ภาคเหนือ. Keep it when regenerating.
+`config/thai-map.json` holds simplified province outlines from Natural Earth (public domain).

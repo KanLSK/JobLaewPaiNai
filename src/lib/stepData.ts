@@ -18,7 +18,6 @@ export function stepQueries(stepId: string): { elective?: Where; hospital?: Wher
   if (step.parentId === "elective")
     return { elective: { specialtyId: stepId === "elective-other" ? null : stepId.slice("elective-".length) }, note };
   if (step.parentId === "intern") return { hospital: { trackId: stepId }, note };
-  if (step.parentId === "resident") return { elective: { specialtyId: stepId }, hospital: { specialtyId: stepId }, note };
   return { note };
 }
 

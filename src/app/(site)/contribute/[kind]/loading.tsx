@@ -7,7 +7,7 @@ export default function ContributeKindLoading() {
     <div className="mx-auto max-w-2xl pb-10">
       <Skeleton>
         <h1 className="mb-2 text-3xl font-bold">เพิ่มรีวิว</h1>
-        <ContributeForm action={sendContribution} hospitals={[]} kind="elective" />
+        <ContributeForm action={sendContribution} hospitals={[]} topic="elective" />
       </Skeleton>
     </div>
   );

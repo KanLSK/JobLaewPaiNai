@@ -54,3 +54,4 @@ h1, h2, h3 { font-family: var(--font-display); }
 .skeleton :is(div, li, section):not([aria-hidden], [data-wire]) { border-color: #cfc6b8 !important; }
 .skeleton :is(h1, h2, h3, p) a { background-color: transparent !important; }
 .skeleton svg { color: #e9e2d7 !important; }
+.skeleton path[data-province] { fill: #e9e2d7 !important; stroke: #e9e2d7 !important; }

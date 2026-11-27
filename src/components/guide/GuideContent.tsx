@@ -1,14 +1,5 @@
-const SECTIONS = {
-  levels: "ระดับโรงพยาบาล",
-  register: "ลงทะเบียนใช้ทุน",
-  timeline: "ช่วงเวลารับสมัคร",
-  eligibility: "สิทธิ์เรียนต่อเฉพาะทาง",
-  university: "ม.รัฐ กับ ม.เอกชน",
-  fixward: "Fix Ward กับใช้ทุนปกติ",
-  scholarship: "ประเภททุน",
-  sources: "แหล่งข้อมูล",
-} as const;
-
+import Link from "next/link";
+import { SECTIONS, TOPICS, type SectionId, type Topic } from "./topics";
 const LEVELS = [
   ["รพ.สต.", "โรงพยาบาลส่งเสริมสุขภาพตำบล", "ปฐมภูมิ (พื้นฐาน)", "หน่วยบริการในชุมชน ให้บริการพื้นฐานและส่งเสริมสุขภาพ"],
   ["รพช.", "โรงพยาบาลชุมชน", "ทุติยภูมิ (ปานกลาง)", "หลักในระดับอำเภอ/จังหวัด (10–150 เตียง)"],
@@ -159,13 +150,100 @@ const SCHOLARSHIPS = [
   },
 ];
 
+const FUNDING = [
+  {
+    title: "1. คุณสมบัติของผู้ขอทุน",
+    points: [
+      "เป็นแพทย์ที่กำลังใช้ทุนรัฐบาลอยู่ (เช่น Intern ปี 1, 2 หรือ 3)",
+      "สาขาขาดแคลน (เช่น เวชศาสตร์ฉุกเฉิน เวชศาสตร์ครอบครัว): ปฏิบัติงานครบ 1 ปีก็สมัครได้",
+      "สาขาอื่น (เช่น ศัลยศาสตร์ กุมารฯ อายุรศาสตร์): ส่วนใหญ่ต้องครบ 2–3 ปีขึ้นไป",
+      "ความประพฤติดี ไม่เคยผิดวินัย และผลงานในวอร์ดเป็นที่ยอมรับของผู้อำนวยการหรืออาจารย์แพทย์",
+    ],
+  },
+  {
+    title: "2. ขั้นตอนการขอทุน",
+    points: [
+      "โรงพยาบาลศูนย์/ทั่วไป หรือเขตสุขภาพ สำรวจว่าใน 3–5 ปีข้างหน้ายังขาดสาขาใด",
+      "ยื่นเรื่องผ่านผู้อำนวยการโรงพยาบาลและ สสจ. ขอโควตาทุนต้นสังกัดของเขตสุขภาพ (ช่วง เม.ย. – พ.ค.)",
+      "ถ้าผ่านการคัดเลือก จะได้หนังสือรับรองการมีต้นสังกัดจากกระทรวงสาธารณสุข สำหรับสมัครเรียนต่อ",
+    ],
+  },
+  {
+    title: "3. หลังได้ทุน (หาที่เรียน)",
+    points: [
+      "ยังต้องสมัครและสอบสัมภาษณ์แข่งกับโรงเรียนแพทย์ต่าง ๆ เอง",
+      "สถาบันฝึกอบรมมักพิจารณาผู้มีต้นสังกัดก่อนแพทย์อิสระ (Free Train)",
+      "เรียนจบแล้วต้องกลับมาใช้ทุนต้นสังกัดตามจำนวนปีที่ไปเรียน",
+    ],
+  },
+  {
+    title: "4. ได้ทุนแล้วแต่สอบเข้าเรียนต่อไม่ได้",
+    points: ["กลับมาทำงานที่โรงพยาบาลเดิมตามปกติ", "ปีถัดไปต้องขออนุมัติทุนใหม่ เพราะโควตาจัดสรรเป็นรายปี แล้วจึงสมัครสอบอีกรอบ"],
+  },
+];
+
+const PAY = [
+  {
+    title: "โรงพยาบาลรัฐ (ใช้ทุนปี 1)",
+    total: "รวมประมาณ 45,000 – 60,000 บาทต่อเดือน",
+    points: [
+      "เงินเดือนฐานข้าราชการ ประมาณ 18,000 – 21,000 บาท",
+      "เงินประจำตำแหน่ง (พ.ต.ส.) 5,000 บาท",
+      "เงินไม่ทำเวชปฏิบัติส่วนตัว 10,000 บาท",
+      "เบี้ยกันดาร (พตส. / P4P) ประมาณ 5,000 – 15,000 บาท ยิ่งห่างไกลยิ่งสูง",
+      "ค่าเวร (OT) ประมาณ 10,000 – 25,000 บาท",
+      "ค่าตอบแทนพิเศษและค่าเวรบางแห่งจ่ายตกเบิก จึงได้ช้ากว่าเงินเดือน",
+    ],
+  },
+  {
+    title: "โรงพยาบาลเอกชน / คลินิกความงาม (จ่ายค่าปรับ)",
+    total: "รวมประมาณ 80,000 – 140,000+ บาทต่อเดือน",
+    points: [
+      "แพทย์ทั่วไป Full-time: การันตีเริ่มต้น 80,000 – 140,000 บาท (เช่น 48 ชั่วโมง/สัปดาห์)",
+      "Part-time: ประมาณ 400 – 800 บาทต่อชั่วโมง หรือเวร 8 ชั่วโมงราว 4,000 – 6,000 บาท",
+      "คลินิกความงาม: มีค่า DF และคอมมิชชันเพิ่ม อาจถึง 100,000 – 150,000+ บาทถ้าเคสมาก",
+    ],
+  },
+];
+
+const TAX = [
+  {
+    title: "40(1) งานประจำ",
+    points: ["เงินเดือน เงิน พตส. P4P และเงินเวรจากโรงพยาบาลตามสัญญาจ้าง", "หักค่าใช้จ่ายแบบเหมา 50% ไม่เกิน 100,000 บาท"],
+  },
+  {
+    title: "40(2) ค่าจ้างจากโรงพยาบาลอื่น",
+    points: [
+      "เงินที่โรงพยาบาลอื่นจ่ายให้ เช่น ค่าเวร ค่าตรวจ OPD ค่าการันตีรายชั่วโมง",
+      "หักค่าใช้จ่ายรวมกับ 40(1) ได้ 50% รวมกันไม่เกิน 100,000 บาท",
+    ],
+  },
+  {
+    title: "40(6) วิชาชีพอิสระ",
+    points: [
+      "เช่น DF หรือเปิดคลินิกเองที่ไม่มีผู้ป่วยค้างคืน",
+      "หักแบบเหมา 60% (ไม่มีเพดาน) หรือหักตามจริงโดยมีหลักฐาน",
+      "เข้าข่ายเมื่อแพทย์ขอใช้สถานที่และอุปกรณ์เพื่อประกอบวิชาชีพในนามตนเอง และมีข้อตกลงแบ่งเงินค่ารักษากับสถานพยาบาล",
+      "ต้องยื่นยอดเต็มก่อนหักส่วนของสถานพยาบาล เช่น DF 300 บาท ถูกหัก 20% ก็ยังยื่น 300 บาท",
+      "ถ้ามีการันตีรายชั่วโมง 400 บาท แต่ตรวจได้ DF 300 บาท: 300 บาทเป็น 40(6) ส่วนที่โรงพยาบาลเติมอีก 100 บาทเป็น 40(2)",
+    ],
+  },
+  {
+    title: "ภาษีหัก ณ ที่จ่าย",
+    points: [
+      "40(1) และ 40(2): สถานพยาบาลต้องหักและนำส่งสรรพากร",
+      "40(6): สถานพยาบาลไม่ต้องหัก เพราะผู้จ่ายคือผู้ป่วย อาจได้เพียงใบรับรองรายได้ (ไม่ใช่ 50 ทวิ) และรายได้อาจไม่ขึ้นใน D-MyTax",
+    ],
+  },
+];
+
 const box = "rounded-2xl border-2 border-ink bg-white p-4";
 const UNCHECKED = "สรุปจากคำบอกเล่า เป็นความเห็นส่วนหนึ่ง ตัวเลขยังไม่ได้ตรวจสอบกับประกาศทางการ";
 
-function Section({ id, note, children }: { id: keyof typeof SECTIONS; note?: string; children: React.ReactNode }) {
+function Section({ id, note, children }: { id: SectionId; note?: string; children: React.ReactNode }) {
   return (
     <section id={id} className="scroll-mt-4 space-y-3">
-      <h2 className="text-2xl font-bold">{SECTIONS[id]}</h2>
+      <h2 className="border-b-4 border-ink pb-1 text-2xl font-bold">{SECTIONS[id]}</h2>
       {note && <p className="rounded-xl border-2 border-dashed border-ink px-3 py-2 text-sm">{note}</p>}
       {children}
     </section>
@@ -180,19 +258,11 @@ const Bullets = ({ items }: { items: string[] }) => (
   </ul>
 );
 
-export function GuideContent() {
-  return (
-    <div className="mx-auto max-w-3xl space-y-10 pb-10">
-      <div className="space-y-3">
-        <h1 className="text-3xl font-bold">คู่มือ</h1>
-        <nav aria-label="หัวข้อในคู่มือ" className="flex flex-wrap gap-2 text-sm font-semibold">
-          {Object.entries(SECTIONS).map(([id, title]) => (
-            <a key={id} href={`#${id}`} className="rounded-full border-2 border-ink bg-white px-3 py-1 hover:bg-graduate">{title}</a>
-          ))}
-        </nav>
-      </div>
-
-      <Section id="levels" note="จำนวนเตียงเป็นค่าประมาณ">
+const BODY: Record<SectionId, { note?: string; content: React.ReactNode }> = {
+  levels: {
+    note: "จำนวนเตียงเป็นค่าประมาณ",
+    content: (
+      <>
         <ul className="space-y-3">
           {LEVELS.map(([short, name, level, role]) => (
             <li key={short} className={box}>
@@ -202,9 +272,12 @@ export function GuideContent() {
             </li>
           ))}
         </ul>
-      </Section>
-
-      <Section id="register">
+      </>
+    ),
+  },
+  register: {
+    content: (
+      <>
         <div className={`${box} space-y-3`}>
           <p>ตอนลงทะเบียนเพื่อใช้ทุน มีให้เลือก 4 แบบ</p>
           <ol className="list-decimal pl-5">
@@ -215,9 +288,13 @@ export function GuideContent() {
           </ol>
           <p>ถ้าสมัครแพทย์พี่เลี้ยงแล้วไม่ได้รับคัดเลือกทุกรอบ ต้องลงทะเบียนใหม่ แล้วเลือกจับฉลากหรือชดใช้เงิน ผู้ที่เลือกจับฉลากตอนนี้จะจับพร้อมกับคนที่เลือกตั้งแต่รอบแรก</p>
         </div>
-      </Section>
-
-      <Section id="timeline" note="ข้อมูลจากเพจ “จบ extern แล้วไปไหนดี” กันยายน 2561 เดือนเป็นค่าประมาณและเปลี่ยนได้ในแต่ละปี โปรดตรวจประกาศปีล่าสุด">
+      </>
+    ),
+  },
+  timeline: {
+    note: "ข้อมูลจากเพจ “จบ extern แล้วไปไหนดี” กันยายน 2561 เดือนเป็นค่าประมาณและเปลี่ยนได้ในแต่ละปี โปรดตรวจประกาศปีล่าสุด",
+    content: (
+      <>
         <dl className={`${box} grid gap-x-4 gap-y-2 sm:grid-cols-[8rem_1fr]`}>
           {TIMELINE.map(([months, name]) => (
             <div key={name} className="sm:contents">
@@ -226,9 +303,13 @@ export function GuideContent() {
             </div>
           ))}
         </dl>
-      </Section>
-
-      <Section id="eligibility" note="เรียบเรียงจากภาพสรุปของสำนักส่งเสริม สนับสนุน การผลิต พัฒนาแพทย์ฯ (สพพ.) ตามประกาศ สป.สธ. ภาพไม่ได้ระบุปีของประกาศ">
+      </>
+    ),
+  },
+  eligibility: {
+    note: "เรียบเรียงจากภาพสรุปของสำนักส่งเสริม สนับสนุน การผลิต พัฒนาแพทย์ฯ (สพพ.) ตามประกาศ สป.สธ. ภาพไม่ได้ระบุปีของประกาศ",
+    content: (
+      <>
         {ELIGIBILITY.map(({ who, rows }) => (
           <details key={who} className={box}>
             <summary className="cursor-pointer font-bold">{who}</summary>
@@ -249,9 +330,13 @@ export function GuideContent() {
           <p className="font-bold">5. แพทย์ที่โอนมาจากกรมอื่นในกระทรวงสาธารณสุข</p>
           <p>ต้องปฏิบัติงานในสังกัด สป.สธ. อย่างน้อย 1 ปี (นับถึงวันเปิดการศึกษา) และหมดพันธะชดใช้ทุน จึงสมัครรับต้นสังกัดได้ทุกสาขาตามโควตาที่ สป.สธ. จัดสรร</p>
         </div>
-      </Section>
-
-      <Section id="university" note={UNCHECKED}>
+      </>
+    ),
+  },
+  university: {
+    note: UNCHECKED,
+    content: (
+      <>
         {UNIVERSITY.map(([topic, state, privateSchool]) => (
           <div key={topic} className={box}>
             <h3 className="font-bold">{topic}</h3>
@@ -261,9 +346,13 @@ export function GuideContent() {
             </dl>
           </div>
         ))}
-      </Section>
-
-      <Section id="fixward" note={UNCHECKED}>
+      </>
+    ),
+  },
+  fixward: {
+    note: UNCHECKED,
+    content: (
+      <>
         <p>นอกจาก Fix Ward จะประหยัดเวลาได้ 2 ปีแล้ว สองทางนี้ยังต่างกันดังนี้</p>
         <div className="grid gap-3 sm:grid-cols-2">
           {FIX_WARD.map(({ title, pros, cons }) => (
@@ -277,9 +366,13 @@ export function GuideContent() {
           ))}
         </div>
         <p className={box}>ชอบวิชาการ อยากเชี่ยวชาญเฉพาะทางเร็ว → Fix Ward<br />ชอบงานหน้างาน อยากรู้จักคนเยอะ ไม่รีบ หรือยังไม่รู้ว่าชอบ ward ไหน → ใช้ทุนปกติ</p>
-      </Section>
-
-      <Section id="scholarship" note={UNCHECKED}>
+      </>
+    ),
+  },
+  scholarship: {
+    note: UNCHECKED,
+    content: (
+      <>
         <div className="grid gap-3 sm:grid-cols-2">
           {SCHOLARSHIPS.map(({ title, points }) => (
             <div key={title} className={`${box} space-y-2`}>
@@ -288,9 +381,86 @@ export function GuideContent() {
             </div>
           ))}
         </div>
-      </Section>
+      </>
+    ),
+  },
+  funding: {
+    note: UNCHECKED,
+    content: (
+      <>
+        {FUNDING.map(({ title, points }) => (
+          <div key={title} className={box}>
+            <h3 className="mb-2 font-bold">{title}</h3>
+            <Bullets items={points} />
+          </div>
+        ))}
+      </>
+    ),
+  },
+  pay: {
+    note: "เป็นตัวเลขประมาณ ไม่ได้ระบุแหล่งที่มา และต่างกันตามโรงพยาบาลและปี",
+    content: (
+      <>
+        <div className="grid items-start gap-3 sm:grid-cols-2">
+          {PAY.map(({ title, total, points }) => (
+            <div key={title} className={box}>
+              <h3 className="font-bold">{title}</h3>
+              <p className="mb-2 font-semibold">{total}</p>
+              <Bullets items={points} />
+            </div>
+          ))}
+        </div>
+      </>
+    ),
+  },
+  tax: {
+    note: "สรุปจากโพสต์ของเพจ “หมอยุ่งอยากมีเวลา” เป็นข้อมูลเบื้องต้น โปรดตรวจกับกรมสรรพากรก่อนยื่นภาษี",
+    content: (
+      <>
+        {TAX.map(({ title, points }) => (
+          <div key={title} className={box}>
+            <h3 className="mb-2 font-bold">{title}</h3>
+            <Bullets items={points} />
+          </div>
+        ))}
+        <p className="text-sm text-muted">อ่านเพิ่มเติม: ข้อหารือภาษีอากร เลขที่ กค 0702/พ/245 และ กค 0811(กม.03)/1903</p>
+      </>
+    ),
+  },
+};
 
-      <Section id="sources">
+/** The front page: pick a topic. */
+export function GuideIndex() {
+  return (
+    <div className="mx-auto max-w-3xl space-y-8 pb-10">
+      <div>
+        <h1 className="text-center text-3xl font-bold">คู่มือ</h1>
+        <p className="text-center text-muted">เลือกเรื่องที่อยากอ่าน</p>
+      </div>
+      <Link href="/guide/quiz" className="flex items-center gap-4 rounded-3xl border-2 border-ink bg-other p-5 shadow-sticker transition hover:-translate-y-1">
+        <span aria-hidden className="text-5xl">🤔</span>
+        <span>
+          <span className="block font-display text-xl font-bold">เรียนต่ออะไรดี?</span>
+          <span className="text-sm">ตอบคำถามไม่กี่ข้อ แล้วดูว่าคุณเหมาะเป็นหมอสาขาไหน</span>
+        </span>
+      </Link>
+      <ul className="grid gap-5 sm:grid-cols-3">
+        {TOPICS.map((t) => (
+          <li key={t.id}>
+            <Link href={`/guide/${t.id}`} className={`flex h-full flex-col gap-2 rounded-3xl border-2 border-ink p-5 shadow-sticker transition hover:-translate-y-1 ${t.color}`}>
+              <span className="font-display text-lg font-bold text-balance">{t.title}</span>
+              <span className="text-sm">{t.about}</span>
+              <span className="mt-auto pt-2 text-sm">
+                {t.sections.map((id) => (
+                  <span key={id} className="block">• {SECTIONS[id]}</span>
+                ))}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <section id="sources" className="space-y-3">
+        <h2 className="text-xl font-bold">แหล่งข้อมูล</h2>
         <div className={box}>
           <Bullets
             items={[
@@ -305,7 +475,33 @@ export function GuideContent() {
             สพพ.: <a href="https://cpird.moph.go.th/" rel="noreferrer" className="underline">https://cpird.moph.go.th/</a>
           </p>
         </div>
-      </Section>
+      </section>
+    </div>
+  );
+}
+
+export function GuidePageContent({ topic }: { topic: Topic }) {
+  return (
+    <div className="mx-auto max-w-3xl space-y-10 pb-10 leading-relaxed">
+      <div className="space-y-3">
+        <nav aria-label="หมวดในคู่มือ" className="flex flex-wrap gap-2 text-sm font-semibold">
+          <Link href="/guide" className="rounded-full border-2 border-ink bg-white px-3 py-1 hover:bg-graduate">← คู่มือ</Link>
+          {TOPICS.filter((t) => t.id !== topic.id).map((t) => (
+            <Link key={t.id} href={`/guide/${t.id}`} className="rounded-full border-2 border-ink bg-white px-3 py-1 hover:bg-graduate">{t.title}</Link>
+          ))}
+        </nav>
+        <h1 className={`rounded-3xl border-2 border-ink p-4 text-3xl font-bold shadow-sticker-sm ${topic.color}`}>{topic.title}</h1>
+        <nav aria-label="หัวข้อในหน้านี้" className="flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold underline">
+          {topic.sections.map((id) => (
+            <a key={id} href={`#${id}`}>{SECTIONS[id]}</a>
+          ))}
+        </nav>
+      </div>
+      {topic.sections.map((id) => (
+        <Section key={id} id={id} note={BODY[id].note}>
+          {BODY[id].content}
+        </Section>
+      ))}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Kind } from "@/lib/entries/types";
+import type { Topic } from "./topics";
 
 const Icon = ({ children }: { children: React.ReactNode }) => (
   <svg aria-hidden viewBox="0 0 48 48" className="h-20 w-20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -7,7 +7,7 @@ const Icon = ({ children }: { children: React.ReactNode }) => (
   </svg>
 );
 
-export const KINDS: Record<Kind, { title: string; about: string; color: string; icon: React.ReactNode }> = {
+export const KINDS: Record<Topic, { title: string; about: string; color: string; icon: React.ReactNode }> = {
   // A stethoscope.
   elective: {
     title: "Elective",
@@ -33,10 +33,34 @@ export const KINDS: Record<Kind, { title: string; about: string; color: string; 
       </Icon>
     ),
   },
+  // A clipboard.
+  extern: {
+    title: "Extern",
+    about: "ประสบการณ์ปี 6",
+    color: "bg-extern",
+    icon: (
+      <Icon>
+        <path d="M17 9h-5v34h24V9h-5" />
+        <path d="M18 5h12v8H18zM18 23h12M18 31h12" />
+      </Icon>
+    ),
+  },
+  // A graduation cap.
+  resident: {
+    title: "Resident",
+    about: "เรียนต่อเฉพาะทาง",
+    color: "bg-resident",
+    icon: (
+      <Icon>
+        <path d="M4 18l20-9 20 9-20 9z" />
+        <path d="M12 23v11c6 6 18 6 24 0V23M44 18v14" />
+      </Icon>
+    ),
+  },
   // A signpost.
   note: {
     title: "เส้นทางอื่น",
-    about: "Extern, Resident และอาชีพอื่น",
+    about: "ใช้ทุน ไม่ใช้ทุน และอาชีพอื่น",
     color: "bg-other",
     icon: (
       <Icon>
@@ -49,9 +73,9 @@ export const KINDS: Record<Kind, { title: string; about: string; color: string; 
 
 export function Chooser() {
   return (
-    <ul className="grid gap-5 sm:grid-cols-3">
+    <ul className="flex flex-wrap justify-center gap-5">
       {Object.entries(KINDS).map(([kind, { title, about, color, icon }]) => (
-        <li key={kind} className="mx-auto w-full max-w-56 sm:max-w-none">
+        <li key={kind} className="w-full max-w-56 sm:w-[calc((100%-2.5rem)/3)] sm:max-w-none">
           <Link
             href={`/contribute/${kind}`}
             className={`flex aspect-square flex-col items-center justify-center gap-3 rounded-3xl border-2 border-ink p-4 text-center shadow-sticker transition hover:-translate-y-1 ${color}`}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Chooser } from "@/components/contribute/Chooser";
+import { contributeHref, noteTopic } from "@/components/contribute/topics";
 import { requireStudent } from "@/lib/auth/session";
 import { mongoConfigured } from "@/lib/entries";
 
@@ -11,8 +12,10 @@ export default async function ContributePage({ searchParams }: { searchParams: P
   await requireStudent();
   const { kind, step } = await searchParams;
   // Links made before each form had its own page.
-  if (kind === "elective" || kind === "hospital" || kind === "note")
-    redirect(`/contribute/${kind}${typeof step === "string" ? `?step=${encodeURIComponent(step)}` : ""}`);
+  if (kind === "elective" || kind === "hospital" || kind === "note") {
+    const stepId = typeof step === "string" ? step : undefined;
+    redirect(contributeHref(kind === "note" && stepId ? noteTopic(stepId) : kind, stepId));
+  }
 
   return (
     <div className="mx-auto max-w-3xl pb-10">
