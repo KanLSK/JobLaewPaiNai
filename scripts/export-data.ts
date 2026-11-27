@@ -4,7 +4,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parse } from "csv-parse/sync";
 import { cleanTable, parseRedactions, toCsv } from "../src/lib/data/clean";
+import { buildAliases } from "../src/lib/data/aliases";
 import { csvSource } from "../src/lib/data/csvSource";
+import { BMSMO_FILE, parseBMSMOFile } from "../src/lib/data/bmsmo";
 import { CSV_FILES, createRepository } from "../src/lib/data/repository";
 import { takeSnapshot } from "../src/lib/data/snapshot";
 
@@ -19,6 +21,8 @@ for (const [table, prefix, headerRows] of [["si129", "SI129", 1], ["si130", "SI1
   writeFileSync(cleaned(CSV_FILES[table]), "\uFEFF" + toCsv(cleanTable(lines, prefix, headerRows, redactions)));
 }
 
+writeFileSync(cleaned(BMSMO_FILE), "\uFEFF" + toCsv(cleanTable(parse(readFileSync(path.join("Data", BMSMO_FILE), "utf8"), { bom: true }), "BM64", 1, redactions)));
+
 const exclude = existsSync("config/exclude.txt")
   ? readFileSync("config/exclude.txt", "utf8").split("\n").map((l) => l.split("#")[0].trim()).filter(Boolean)
   : [];
@@ -29,7 +33,16 @@ const source = csvSource({
   hospitals: cleaned(CSV_FILES.hospitals),
   aliases: "config/aliases.csv",
 });
-const snapshot = await takeSnapshot(createRepository(source, { approveAll: true }), exclude);
+const aliases = buildAliases(parse(readFileSync("config/aliases.csv", "utf8"), { bom: true, columns: true }));
+const booklet = parseBMSMOFile(readFileSync(cleaned(BMSMO_FILE), "utf8"), aliases);
+const forms = createRepository(source, { approveAll: true });
+const snapshot = await takeSnapshot(
+  {
+    getElectiveReviews: async () => [...(await forms.getElectiveReviews()), ...booklet],
+    getHospitalReviews: forms.getHospitalReviews,
+  },
+  exclude,
+);
 mkdirSync("content", { recursive: true });
 writeFileSync("content/reviews.json", JSON.stringify(snapshot, null, 1));
 console.log(`${redactions.length} redactions; content/reviews.json: ${snapshot.electives.length} electives, ${snapshot.hospitals.length} hospital reviews`);

@@ -60,12 +60,6 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
     </ul>
   );
   const track = (id: string) => <StepNode step={findStep(id)!} count={counts[id] ?? 0} />;
-  /** A part of the map that has its own page. */
-  const door = (href: string, content: React.ReactNode) => (
-    <Link href={href} className={`block w-full max-w-xs rounded-2xl border-2 border-ink px-4 py-3 text-center text-sm font-semibold shadow-sticker-sm transition hover:-translate-y-0.5 bg-white`}>
-      {content}
-    </Link>
-  );
   const holds = (parent: string) => selected?.parentId === parent;
   const wards = ELECTIVE_DEPARTMENTS.filter((s) => (counts[s.id] ?? 0) > 0);
 
@@ -139,8 +133,8 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
         <section aria-label="ไม่ใช้ทุน" className="relative">
           <span aria-hidden className="absolute -top-6 left-1/2 hidden h-6 w-[3px] -translate-x-1/2 bg-ink lg:block" />
           <Group label="ไม่ใช้ทุน (จ่ายค่าปรับ)" className="bg-intern">
-            <p className="text-center text-sm">แพทย์ต่างประเทศ, โรงพยาบาลเอกชน, เรียนต่อ, เปิดคลินิก</p>
-            {door("/no-service", `ดู ${NO_SERVICE_PAGE.steps.length} เส้นทาง →`)}
+            {list(NO_SERVICE_PAGE.steps, "grid w-full grid-cols-2 gap-3 lg:grid-cols-1")}
+            <Link href="/no-service" className="text-sm font-semibold underline">ข้อมูลรายได้และภาษี →</Link>
           </Group>
         </section>
       </div>

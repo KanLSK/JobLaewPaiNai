@@ -19,10 +19,13 @@ test("the pathway shows every specialty at once, with nothing to open first", ()
   expect(screen.getByRole("link", { name: /ข้อมูลเรียนต่อ/ }).getAttribute("href")).toBe("/resident");
 });
 
-test("the pathway sends ไม่ใช้ทุน to its own page", () => {
+test("the pathway shows all four ไม่ใช้ทุน paths at once, and still links their page", () => {
   render(<RoadmapView electives={[]} hospitals={[]} />);
-  expect(screen.getByRole("link", { name: /ดู 4 เส้นทาง/ }).getAttribute("href")).toBe("/no-service");
-  for (const gone of ["abroad", "own-clinic"]) expect(steps()).not.toContain(gone);
+  const group = screen.getByRole("group", { name: "ไม่ใช้ทุน (จ่ายค่าปรับ)" });
+  expect([...group.querySelectorAll("[data-step]")].map((n) => n.getAttribute("data-step"))).toEqual(["abroad", "private-practice", "further-study", "own-clinic"]);
+  expect(group.querySelector("button")).toBeNull();
+  expect(steps()).toContain("own-clinic");
+  expect(screen.getByRole("link", { name: /ข้อมูลรายได้และภาษี/ }).getAttribute("href")).toBe("/no-service");
 });
 
 test("the Resident page has the specialties and the funding guide", () => {

@@ -15,7 +15,7 @@ test("every node links to its step; empty ones say so and are dashed", () => {
   expect(node("extern").textContent).toContain("รอข้อมูล");
   expect(node("extern").className).toContain("border-dashed");
   expect(node("graduate").textContent).not.toContain("รอข้อมูล");
-  expect(document.querySelectorAll("[data-step]")).toHaveLength(6 + 5 + 18 + 14);
+  expect(document.querySelectorAll("[data-step]")).toHaveLength(6 + 9 + 18 + 14);
 });
 
 test("a selected step opens a labelled dialog that closes by link or Escape", () => {
@@ -58,7 +58,7 @@ test("the middle of the map follows the new flowchart", () => {
   const inside = (name: string) => [...screen.getByRole("group", { name }).querySelectorAll("[data-step]")].map((n) => n.getAttribute("data-step"));
   expect(inside("ต้นสังกัดอื่น ๆ")).toEqual(["fixed-medschool", "other-hospital", "military"]);
   expect(inside("สังกัดกระทรวงสาธารณสุข")).toEqual(["fixed-moph", "lottery"]);
-  expect(screen.getByRole("group", { name: "ไม่ใช้ทุน (จ่ายค่าปรับ)" }).textContent).toContain("เปิดคลินิก");
+  expect(inside("ไม่ใช้ทุน (จ่ายค่าปรับ)")).toEqual(["abroad", "private-practice", "further-study", "own-clinic"]);
   expect(screen.getByRole("group", { name: "สังกัดกระทรวงสาธารณสุข" }).textContent).toContain("ไม่สอบบอร์ด");
 });
 

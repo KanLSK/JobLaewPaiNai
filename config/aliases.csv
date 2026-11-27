@@ -119,3 +119,18 @@ department,นิติเวช,นิติเวชศาสตร์
 track,จับฉลากใช้ทุน สังกัดกระทรวงสาธารณสุข,จับฉลากใช้ทุน สังกัดกระทรวงสาธารณสุข
 track,Fixed สอบบอร์ด,Fixed Ward สังกัดกระทรวงสาธารณสุข (Fixed ไม่สอบบอร์ด / Fixed สอบบอร์ด)
 track,Fixed ไม่สอบบอร์ด,Fixed Ward สังกัดกระทรวงสาธารณสุข (Fixed ไม่สอบบอร์ด / Fixed สอบบอร์ด)
+hospital,โรงพยาบาลศรีนครินทร์,โรงพยาบาลศรีนครินทร์ ขอนแก่น
+hospital,ไม่ระบุ,ไม่ระบุโรงพยาบาล
+department,Medicine,อายุรศาสตร์
+department,Surgery,ศัลยศาสตร์
+department,Pediatrics,กุมารเวชศาสตร์
+department,Psychiatry,จิตเวชศาสตร์
+department,Rehabilitation medicine,เวชศาสตร์ฟื้นฟู
+department,Family medicine,เวชศาสตร์ครอบครัว
+department,Pathology,พยาธิวิทยา
+department,OBGYN,สูติศาสตร์-นรีเวชวิทยา
+department,Ophthalmology,จักษุวิทยา
+department,Forensic,นิติเวชศาสตร์
+department,Occupational medicine,เวชศาสตร์ป้องกันและสังคม
+department,Anesthesiology,วิสัญญีวิทยา
+department,Radiology,รังสีวิทยา

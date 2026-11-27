@@ -98,3 +98,100 @@ export function parseHospitals(rows: Row[], aliases: Aliases): HospitalReview[] 
       };
     });
 }
+
+// The BMSMO64 booklet: a PDF laid out in two columns, then turned into a spreadsheet.
+
+const BMSMO_HEADINGS = ["ที่พักและการเดินทาง", "Activity ในแต่ละวัน", "ทำไมถึงเลือกที่นี่", "สรุปข้อดี", "สรุปข้อเสีย", "คำแนะนำเพิ่มเติม", "สิ่งที่ได้รับ"];
+
+function commentSections(comment: string) {
+  // Splitting on a captured group gives: text before, heading, text, heading, text…
+  const parts = comment.split(new RegExp(`^(${BMSMO_HEADINGS.join("|")}):`, "m"));
+  const entries: [string, string][] = [["รีวิว", parts[0]]];
+  for (let i = 1; i < parts.length; i += 2) entries.push([parts[i], parts[i + 1]]);
+  return sections(entries);
+}
+
+const ONE_LABEL = [["อาหาร ที่เที่ยว อากาศ", "อาหาร,สถานที่ท่องเที่ยว,อากาศ(เรื่องอื่นๆที่ไม่ใช่เรื่องเรียน)"]];
+const THREE_LABELS = [
+  ["อาหาร", "รีวิวอาหาร"],
+  ["สถานที่ท่องเที่ยว", "รีวิวสถานที่ท่องเที่ยว"],
+  ["สภาพอากาศ/สภาพแวดล้อม", "รีวิวสภาพอากาศ/สภาพแวดล้อม"],
+];
+
+/** Spaces and Thai marks drift in the extracted text, so labels are compared without them. */
+const IGNORED = /[\s\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/;
+const bare = (value: string) => [...value].filter((c) => !IGNORED.test(c)).join("");
+
+const LEFTOVER = new RegExp(["ที่ไม่ใช่เรื่อง", "(เรื่องอื่น", "เรียน)"].map((p) => bare(p).replace(/[()]/g, "\\$&")).join("|"));
+
+/** How much of `target` (from `done`) starts this line, stopping only where a word ends. */
+function labelPiece(line: string, target: string, done: number) {
+  let at = done;
+  let piece: { done: number; end: number } | null = null;
+  for (let i = 0; i < line.length && at < target.length; i++) {
+    if (!IGNORED.test(line[i])) {
+      if (line[i] !== target[at]) break;
+      at++;
+    }
+    if (at > done && (at === target.length || i + 1 === line.length || /\s/.test(line[i + 1]))) piece = { done: at, end: i + 1 };
+  }
+  return piece;
+}
+
+/**
+ * The booklet's left-column label wraps over the first few lines, mixed in with the answer.
+ * This takes the label out and keeps everything else.
+ */
+function otherSections(value: string, id: string) {
+  const labels = value.trimStart().startsWith("รีวิว") ? THREE_LABELS : ONE_LABEL;
+  const targets = labels.map(([, label]) => bare(label));
+  const found: { label: number; lines: string[] }[] = [{ label: 0, lines: [] }];
+  let current = -1;
+  let done = 0;
+  for (const line of value.split("\n")) {
+    let rest = line;
+    const open = current >= 0 && done < targets[current].length;
+    let piece = open ? labelPiece(rest, targets[current], done) : null;
+    // A new part may start only after the last label is complete, and not on a bare common word.
+    for (let next = current + 1; !piece && !open && next < targets.length; next++) {
+      const start = labelPiece(rest, targets[next], 0);
+      if (start && start.done >= 5) {
+        piece = start;
+        current = next;
+        found.push({ label: next, lines: [] });
+      }
+    }
+    if (piece) {
+      done = piece.done;
+      rest = rest.slice(piece.end);
+    }
+    // A line that held nothing but the label adds nothing to the answer.
+    if (!piece || rest.trim()) found[found.length - 1].lines.push(rest.trim());
+  }
+  // The booklet sometimes cuts the label short. Pieces of it showing up in an answer mean it was misread.
+  const leftover = found.some(({ lines }) => lines.some((line) => LEFTOVER.test(bare(line))));
+  if (current >= 0 && done < targets[current].length && leftover) throw new Error(`${id}: could not read the label in "อื่น ๆ"`);
+  return found.flatMap(({ label, lines }) => {
+    const answer = lines.join("\n").trim();
+    return /^["\s-]*$/.test(answer) ? [] : [{ label: labels[label][0], text: answer }];
+  });
+}
+
+/** Every row is published; ids follow the row position, as in the other files. */
+export function parseBMSMO(rows: Row[], aliases: Aliases): ElectiveReview[] {
+  return rows.map((row, index) => {
+    const id = `BM64-${index}`;
+    return {
+      id,
+      year: "BMSMO64",
+      hospital: hospitalName(aliases, row.hospital),
+      wardRaw: text(row.place) ?? "",
+      specialtyId: stepId(aliases, "department", (row.department ?? "").trim(), SPECIALTIES),
+      overall: parseScore((row.overall ?? "").replace(/\/\s*10\s*$/, ""), "คะแนนภาพรวม", 10),
+      extra: [],
+      sections: [...commentSections(row.comment ?? ""), ...otherSections(row.other ?? "", id)],
+      threeWords: null,
+      province: null,
+    };
+  });
+}
