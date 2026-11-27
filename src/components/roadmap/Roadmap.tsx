@@ -33,9 +33,9 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
         </div>
         {steps.length > 0 && (
           <Branch label={toggle} defaultOpen={holds(id)} className="md:contents" desktop="md:contents">
-            <div className="grid gap-3 md:contents">
-              {list(steps.slice(0, half), "grid gap-3 md:col-start-1 md:row-start-1", `relative ${LINK} md:after:-right-8`)}
-              {list(steps.slice(half), "grid gap-3 md:col-start-3 md:row-start-1", `relative ${LINK} md:after:-left-8`)}
+            <div className="grid w-full gap-3 md:contents">
+              {list(steps.slice(0, half), "grid w-full gap-3 md:col-start-1 md:row-start-1", `relative ${LINK} md:after:-right-8`)}
+              {list(steps.slice(half), "grid w-full gap-3 md:col-start-3 md:row-start-1", `relative ${LINK} md:after:-left-8`)}
             </div>
           </Branch>
         )}
