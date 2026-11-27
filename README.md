@@ -32,6 +32,31 @@ then applies `Data/redactions.tsv` (names and contact details written inside rev
 The ids are row positions, so add new responses at the end of each file. Whole reviews can be left out with
 `config/exclude.txt`. Everything in `content/reviews.json` is public.
 
+## Going live with MongoDB (contribution forms)
+
+With MongoDB on, people add reviews at `/contribute`, you approve them at `/admin`, and approved ones appear within about a minute.
+
+1. In MongoDB Atlas, create a cluster and a database user that can read and write only the `joblaew` database.
+2. Under *Network Access*, allow Vercel to connect. Vercel's addresses change, so this usually means `0.0.0.0/0`; use a long random database password.
+3. Put these in `.env.local` (never in git):
+
+```
+MONGODB_URI=mongodb+srv://...
+MONGODB_DB=joblaew-test
+ADMIN_PASSWORD=at-least-12-characters
+DATA_SOURCE=mongodb
+```
+
+4. `npm run import-mongo` copies `content/reviews.json` in as approved. It is safe to run again: your edits and deletions are kept.
+5. `npm run dev`, then try `/contribute` and `/admin`.
+6. Going live: run the import once with `MONGODB_DB=joblaew`, then set the same four variables in Vercel with that name.
+
+Use a separate database name for testing: a local site with the live name changes live data.
+
+**Before approving**, read the whole entry for names, contact details, patient information and accusations.
+Highlighting only helps and misses things. "ลบถาวร" removes an entry for good.
+To go back to the file, remove `DATA_SOURCE`; entries added through the forms are then not shown.
+
 ## Going live with Google Sheets
 
 ### 1. Google sign-in (optional, off by default)
