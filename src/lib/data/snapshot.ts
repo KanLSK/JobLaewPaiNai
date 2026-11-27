@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import type { ReviewRepository } from "./repository";
 import type { ElectiveReview, HospitalReview } from "./types";
+import { withViews } from "./views";
 
 /** What the site shows, already parsed: it holds no column the pages do not display. */
 export interface Snapshot {
@@ -8,7 +9,7 @@ export interface Snapshot {
   hospitals: HospitalReview[];
 }
 
-export async function takeSnapshot(repository: ReviewRepository, exclude: string[]): Promise<Snapshot> {
+export async function takeSnapshot(repository: Pick<ReviewRepository, "getElectiveReviews" | "getHospitalReviews">, exclude: string[]): Promise<Snapshot> {
   const keep = (review: { id: string }) => !exclude.includes(review.id);
   return {
     electives: (await repository.getElectiveReviews()).filter(keep),
@@ -25,9 +26,9 @@ export function fileRepository(file: string): ReviewRepository {
       throw error;
     }
   };
-  return {
+  return withViews({
     getElectiveReviews: async () => (await load()).electives,
     getHospitalReviews: async () => (await load()).hospitals,
     getNotes: async () => [],
-  };
+  });
 }

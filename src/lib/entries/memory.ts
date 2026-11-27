@@ -15,10 +15,20 @@ export function memoryStore(): EntryStore & RateStore {
   };
 
   return {
-    async list(status, kind) {
+    async places(status) {
+      return [...entries.values()]
+        .filter((e) => e.status === status)
+        .map((e) => {
+          const data = e.data as unknown as Record<string, string>;
+          const kept = ["specialtyId", "trackId", "stepId", "hospital"].filter((key) => key in data);
+          return { kind: e.kind, ...Object.fromEntries(kept.map((key) => [key, data[key]])) };
+        });
+    },
+    async list(status, kind, where = {}) {
       return structuredClone(
         [...entries.values()]
           .filter((e) => e.status === status && (!kind || e.kind === kind))
+          .filter((e) => Object.entries(where).every(([key, value]) => (e.data as unknown as Record<string, unknown>)[key] === value))
           .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()),
       );
     },

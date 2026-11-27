@@ -13,9 +13,7 @@ export const metadata: Metadata = { title: "เพิ่มรีวิว · �
 /** Names already on the site; the form still works if they cannot be loaded. */
 async function hospitalNames() {
   try {
-    const repository = getRepository();
-    const [electives, hospitals] = await Promise.all([repository.getElectiveReviews(), repository.getHospitalReviews()]);
-    return [...new Set([...electives, ...hospitals].map((r) => r.hospital))].sort((a, b) => a.localeCompare(b, "th"));
+    return await getRepository().getHospitalNames();
   } catch (error) {
     console.error(error);
     return [];

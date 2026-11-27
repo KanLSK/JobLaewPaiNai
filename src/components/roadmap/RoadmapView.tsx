@@ -39,6 +39,8 @@ function contributeHref(step: Step) {
 
 interface Props {
   stepId?: string;
+  /** Counted from the lists below when not given. */
+  counts?: Record<string, number>;
   electives: ElectiveReview[];
   hospitals: HospitalReview[];
   notes?: NoteEntry[];
@@ -46,7 +48,7 @@ interface Props {
 }
 
 /** Only the selected step's reviews are rendered into the panel. */
-export function RoadmapView({ stepId, electives, hospitals, notes = [], canContribute = false }: Props) {
+export function RoadmapView({ stepId, counts, electives, hospitals, notes = [], canContribute = false }: Props) {
   const step = stepId ? findStep(stepId) : null;
   const content = step ? contentFor(step.id, electives, hospitals, notes) : null;
   const total = content ? content.electives.length + content.hospitals.length + content.notes.length : 0;
@@ -55,7 +57,7 @@ export function RoadmapView({ stepId, electives, hospitals, notes = [], canContr
   return (
     <>
       <div inert={step !== null}>
-        <Roadmap counts={countByStep(electives, hospitals, notes)} selected={step} />
+        <Roadmap counts={counts ?? countByStep(electives, hospitals, notes)} selected={step} />
       </div>
       {step && content && (
         <StepPanel key={step.id} stepId={step.id} title={step.parentId === "elective" ? `Elective · ${step.label}` : step.label}>

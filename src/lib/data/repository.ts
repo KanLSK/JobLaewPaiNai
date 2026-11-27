@@ -9,12 +9,16 @@ import { parseHospitals, parseSI129, parseSI130 } from "./parse";
 import { mongoRepository } from "./mongoRepository";
 import { sheetsSource } from "./sheetsSource";
 import { fileRepository } from "./snapshot";
-import type { ColumnSpec, ElectiveReview, HospitalReview, NoteEntry, TableId, TableSource } from "./types";
+import type { ColumnSpec, TableId, TableSource } from "./types";
+import { withViews, type Lists } from "./views";
+import type { StepContent } from "@/lib/stepData";
 
-export interface ReviewRepository {
-  getElectiveReviews(): Promise<ElectiveReview[]>;
-  getHospitalReviews(): Promise<HospitalReview[]>;
-  getNotes(): Promise<NoteEntry[]>;
+export interface ReviewRepository extends Lists {
+  /** How many reviews each roadmap step has. */
+  getStepCounts(): Promise<Record<string, number>>;
+  /** Only what one step shows. */
+  getStepReviews(stepId: string): Promise<StepContent>;
+  getHospitalNames(): Promise<string[]>;
 }
 
 const TEN_MINUTES = 10 * 60 * 1000;
@@ -27,7 +31,7 @@ export function createRepository(source: TableSource, opts: { approveAll?: boole
   };
   const aliases = async () => buildAliases(await source.readTable("aliases", ALIAS_COLUMNS));
 
-  return {
+  return withViews({
     getElectiveReviews: cached(async () => {
       const [a, si129, si130] = await Promise.all([aliases(), read("si129", SI129_COLUMNS), read("si130", SI130_COLUMNS)]);
       return [...parseSI130(si130, a), ...parseSI129(si129, a)];
@@ -38,7 +42,7 @@ export function createRepository(source: TableSource, opts: { approveAll?: boole
     }, ttl),
     // Notes only come in through the website forms.
     getNotes: async () => [],
-  };
+  });
 }
 
 export function approveAllEnabled(env: Record<string, string | undefined>): boolean {
