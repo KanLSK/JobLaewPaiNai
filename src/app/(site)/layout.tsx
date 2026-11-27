@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { signOut } from "@/auth";
-import { devBypassEnabled } from "@/lib/auth/allowed";
+import { loginRequired } from "@/lib/auth/allowed";
 import { requireStudent } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +31,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             </Link>
           ))}
         </nav>
-        {!devBypassEnabled(process.env) && (
+        {loginRequired(process.env) && (
           <form action={leave} className="ml-auto">
             <button className="cursor-pointer text-sm underline">ออกจากระบบ</button>
           </form>

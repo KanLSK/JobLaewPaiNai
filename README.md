@@ -1,22 +1,25 @@
 # จบแล้วไปไหน
 
 A roadmap of the paths after medical school, with elective and internship-hospital reviews.
-Only Mahidol student Google accounts can read it.
+**There is no login: anyone with the web address can read every approved review.**
+Google sign-in for Mahidol students can be switched on (see below).
 
 ## Preview on your computer (no accounts needed)
 
 ```bash
 npm install
-DATA_SOURCE=csv DEV_APPROVE_ALL=1 AUTH_DEV_BYPASS=1 npm run dev
+DATA_SOURCE=csv DEV_APPROVE_ALL=1 npm run dev
 ```
 
-Open http://localhost:3000. This reads the CSV files in `Data/`, shows unapproved rows and skips sign-in.
-Both switches only work in `npm run dev` with `DATA_SOURCE=csv`.
-The preview is reachable only from this computer. Keep it that way: it has no sign-in.
+Open http://localhost:3000. This reads the CSV files in `Data/` and shows unapproved rows.
+`DEV_APPROVE_ALL` only works in `npm run dev` with `DATA_SOURCE=csv`.
+The preview is reachable only from this computer. Keep it that way: it shows unapproved rows.
 
 ## Going live
 
-### 1. Google sign-in
+### 1. Google sign-in (optional, off by default)
+Skip this section to run without login. To switch it on, set `REQUIRE_LOGIN=1` and do the steps below.
+
 1. In [Google Cloud Console](https://console.cloud.google.com/) create a project.
 2. Set up the OAuth consent screen: **External**, scopes `openid`, `email`, `profile`, then publish the app.
 3. Create an **OAuth client ID** of type *Web application* with redirect URIs
@@ -51,13 +54,16 @@ Changes appear within about 10 minutes.
 ### 3. Vercel
 Import the repository and set these variables (see `.env.example`):
 
-`AUTH_SECRET` (`openssl rand -base64 32`), `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `DATA_SOURCE=sheets`,
+`DATA_SOURCE=sheets`,
 `SHEET_ID` (from the sheet's address), `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_SERVICE_ACCOUNT_KEY`
-(the `private_key` value from the JSON key), and optionally `ALLOWED_EMAIL_DOMAINS` and `REPORT_URL`.
+(the `private_key` value from the JSON key) and `REPORT_URL` (so people can ask for a review to be removed).
+
+With login on, also set `REQUIRE_LOGIN=1`, `AUTH_SECRET` (`openssl rand -base64 32`), `AUTH_GOOGLE_ID`,
+`AUTH_GOOGLE_SECRET` and optionally `ALLOWED_EMAIL_DOMAINS`.
 
 ## Privacy rules built in
 - Timestamps, rotation codes, student IDs and hospital contact columns are never requested from the sheet.
-- Review data is rendered on the server for signed-in students only. `Data/` is not committed.
+- Only approved rows are shown. With login off they are public. `Data/` is not committed.
 - Search engines are told not to index the site.
 
 ## Development

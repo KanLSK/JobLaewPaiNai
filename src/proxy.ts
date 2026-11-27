@@ -1,6 +1,6 @@
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { auth } from "@/auth";
-import { allowedDomains, devBypassEnabled, isAllowedEmail } from "@/lib/auth/allowed";
+import { allowedDomains, isAllowedEmail, loginRequired } from "@/lib/auth/allowed";
 
 const guard = auth((request) => {
   if (isAllowedEmail(request.auth?.user?.email, allowedDomains())) return NextResponse.next();
@@ -10,8 +10,8 @@ const guard = auth((request) => {
 }) as unknown as (request: NextRequest, event: NextFetchEvent) => Promise<Response>;
 
 export default function proxy(request: NextRequest, event: NextFetchEvent) {
-  // Decided before Auth.js runs, so a local preview needs no secret.
-  if (devBypassEnabled(process.env)) return NextResponse.next();
+  // Decided before Auth.js runs, so no secret is needed while login is off.
+  if (!loginRequired(process.env)) return NextResponse.next();
   return guard(request, event);
 }
 

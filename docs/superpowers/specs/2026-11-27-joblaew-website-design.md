@@ -92,6 +92,10 @@ There is no written content for specialties or careers yet, so none will be inve
 - Keyboard usable and readable contrast. No logo or mascot beyond a simple wordmark.
 
 ## 7. Sign-in and privacy
+**Changed 2026-11-27 at your request: login is off.** Anyone with the address can read approved reviews.
+This replaces the "only Mahidol student accounts" goal. The sign-in rules below apply only with `REQUIRE_LOGIN=1`.
+Approval, private-column exclusion and no search indexing still apply.
+
 - Auth.js with the Google provider; session stored in a signed cookie, no database.
 - The server accepts only verified emails whose domain is exactly `student.mahidol.edu` or `student.mahidol.ac.th`. The list is a setting.
 - This admits any Mahidol student, not only medical students.

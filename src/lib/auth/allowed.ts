@@ -17,8 +17,9 @@ export function isAllowedProfile(
   return profile.email_verified === true && isAllowedEmail(profile.email, domains);
 }
 
-export function devBypassEnabled(env: Record<string, string | undefined>): boolean {
-  return env.NODE_ENV === "development" && env.DATA_SOURCE === "csv" && env.AUTH_DEV_BYPASS === "1";
+/** Google sign-in is off by default: anyone with the address can read approved reviews. */
+export function loginRequired(env: Record<string, string | undefined>): boolean {
+  return env.REQUIRE_LOGIN === "1";
 }
 
 /** Only a path on this site; anything that a browser could read as another host becomes "/". */

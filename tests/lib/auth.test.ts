@@ -1,4 +1,4 @@
-import { allowedDomains, devBypassEnabled, isAllowedEmail, isAllowedProfile, safeCallback } from "@/lib/auth/allowed";
+import { allowedDomains, isAllowedEmail, isAllowedProfile, loginRequired, safeCallback } from "@/lib/auth/allowed";
 
 const d = allowedDomains(undefined);
 
@@ -20,11 +20,11 @@ test("reads the domain list from the setting", () => {
   expect(allowedDomains("")).toEqual(d);
 });
 
-test("dev bypass needs development and csv", () => {
-  expect(devBypassEnabled({ NODE_ENV: "production", DATA_SOURCE: "csv", AUTH_DEV_BYPASS: "1" })).toBe(false);
-  expect(devBypassEnabled({ NODE_ENV: "development", DATA_SOURCE: "sheets", AUTH_DEV_BYPASS: "1" })).toBe(false);
-  expect(devBypassEnabled({ NODE_ENV: "development", DATA_SOURCE: "csv", AUTH_DEV_BYPASS: "1" })).toBe(true);
-  expect(devBypassEnabled({ NODE_ENV: "development", DATA_SOURCE: "csv" })).toBe(false);
+test("login is off unless switched on", () => {
+  expect(loginRequired({})).toBe(false);
+  expect(loginRequired({ NODE_ENV: "production" })).toBe(false);
+  expect(loginRequired({ REQUIRE_LOGIN: "0" })).toBe(false);
+  expect(loginRequired({ REQUIRE_LOGIN: "1" })).toBe(true);
 });
 
 test("callback stays on this site", () => {

@@ -7,20 +7,15 @@ vi.mock("next/navigation", () => ({ redirect: (to: string) => redirect(to) }));
 vi.mock("@/auth", () => ({ auth: async () => ({ user: { email: "a@student.mahidol.edu" } }), signIn: vi.fn(), signOut: vi.fn() }));
 afterEach(() => vi.unstubAllEnvs());
 
-const loginOff = () => {
-  vi.stubEnv("NODE_ENV", "development");
-  vi.stubEnv("DATA_SOURCE", "csv");
-  vi.stubEnv("AUTH_DEV_BYPASS", "1");
-};
 const layout = async () => renderToStaticMarkup(await SiteLayout({ children: null }));
 
 test("with login off there is no sign-out button and no sign-in page", async () => {
-  loginOff();
   expect(await layout()).not.toContain("ออกจากระบบ");
   await expect(SignInPage({ searchParams: Promise.resolve({}) })).rejects.toThrow("redirect:/");
 });
 
-test("with login on both are there", async () => {
+test("switching login on brings both back", async () => {
+  vi.stubEnv("REQUIRE_LOGIN", "1");
   expect(await layout()).toContain("ออกจากระบบ");
   expect(renderToStaticMarkup(await SignInPage({ searchParams: Promise.resolve({}) }))).toContain("Google");
 });

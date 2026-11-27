@@ -1,10 +1,11 @@
 import "server-only";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { allowedDomains, devBypassEnabled, isAllowedEmail } from "./allowed";
+import { allowedDomains, isAllowedEmail, loginRequired } from "./allowed";
 
-export async function requireStudent(): Promise<{ email: string; name: string | null }> {
-  if (devBypassEnabled(process.env)) return { email: "dev@localhost", name: "Local preview" };
+/** Returns null when login is off; otherwise the signed-in student, or redirects. */
+export async function requireStudent(): Promise<{ email: string; name: string | null } | null> {
+  if (!loginRequired(process.env)) return null;
   const session = await auth();
   const email = session?.user?.email;
   // Checked on every request, so a change to the allowed list applies at once.
