@@ -18,12 +18,19 @@ The preview is reachable only from this computer. Keep it that way: it shows una
 ## Going live without Google Sheets
 
 ```bash
-npm run export-data   # Data/*.csv -> content/reviews.json
+npm run export-data   # Data/*.csv -> Data/cleaned/*.csv -> content/reviews.json
+git add content/reviews.json && git commit -m "update reviews" && git push origin build:main
 ```
 
-The site reads that file when `DATA_SOURCE` is unset, so Vercel needs no variables. It holds only what the pages show.
-Put review ids to leave out in `config/exclude.txt`. The file is git-ignored until you remove `/content/` from `.gitignore`.
-**Committing it publishes the review text**, and with login off the site shows it to anyone.
+The site reads `content/reviews.json` when `DATA_SOURCE` is unset, so Vercel needs no variables (delete any there).
+
+The export never changes your original files. It drops timestamps, rotation codes, student IDs and hospital contacts,
+then applies `Data/redactions.tsv` (names and contact details written inside reviews). That list stays on your computer.
+
+**New reviews are not checked automatically.** Read them for names, contacts and accusations, and add lines to
+`Data/redactions.tsv` (review id, text to find, replacement; tab-separated) before publishing.
+The ids are row positions, so add new responses at the end of each file. Whole reviews can be left out with
+`config/exclude.txt`. Everything in `content/reviews.json` is public.
 
 ## Going live with Google Sheets
 

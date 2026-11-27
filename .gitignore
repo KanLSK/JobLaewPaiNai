@@ -1,8 +1,9 @@
 node_modules
 .next
 /Data/
-# Cleaned review text. Remove this line only when it is cleared for publishing.
-/content/
+# Only the cleaned review file is published; anything else made in content/ stays local.
+/content/*
+!/content/reviews.json
 .env*
 !.env.example
 .DS_Store

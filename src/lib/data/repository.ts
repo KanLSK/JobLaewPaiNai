@@ -46,12 +46,18 @@ function required(name: string): string {
   return value;
 }
 
-export function localCsv(): TableSource {
+export const CSV_FILES = {
+  si129: "Review Elective SI129 - Form Responses 1.csv",
+  si130: "Review Elective SI130 (Responses) - Form Responses 1.csv",
+  hospitals: "Copy of โรงพยาบาลใช้ทุน_Data - ข้อมูลที่อยากได้รีวิว (ตัวอย่าง).csv",
+};
+
+function localCsv(): TableSource {
   const data = (file: string) => path.join(process.cwd(), "Data", file);
   return csvSource({
-    si129: data("Review Elective SI129 - Form Responses 1.csv"),
-    si130: data("Review Elective SI130 (Responses) - Form Responses 1.csv"),
-    hospitals: data("Copy of โรงพยาบาลใช้ทุน_Data - ข้อมูลที่อยากได้รีวิว (ตัวอย่าง).csv"),
+    si129: data(CSV_FILES.si129),
+    si130: data(CSV_FILES.si130),
+    hospitals: data(CSV_FILES.hospitals),
     aliases: path.join(process.cwd(), "config", "aliases.csv"),
   });
 }
