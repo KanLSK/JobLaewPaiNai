@@ -19,5 +19,5 @@ test("text search covers hospital, ward and sections, ignoring case", () => {
 
 test("filters combine", () => {
   const list = [e("a", 1, 5), e("b", 1, 5, { year: "SI129" }), e("c", 1, 5, { specialtyId: null })];
-  expect(filterElectives(list, { year: "SI130", specialtyId: "emergency", hospital: "ศิริราช" }).map((x) => x.id)).toEqual(["a"]);
+  expect(filterElectives(list, { specialtyId: "emergency", hospital: "ศิริราช" }).map((x) => x.id)).toEqual(["a", "b"]);
 });

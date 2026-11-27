@@ -7,13 +7,12 @@ const ratio = (r: ElectiveReview) => (r.overall.value === null ? -1 : r.overall.
 
 export function filterElectives(
   list: ElectiveReview[],
-  q: { text?: string; hospital?: string; specialtyId?: string; year?: string; sort?: "score" | "hospital" },
+  q: { text?: string; hospital?: string; specialtyId?: string; sort?: "score" | "hospital" },
 ): ElectiveReview[] {
   const out = list.filter(
     (r) =>
       (!q.hospital || r.hospital === q.hospital) &&
       (!q.specialtyId || r.specialtyId === q.specialtyId) &&
-      (!q.year || r.year === q.year) &&
       includes([r.hospital, r.wardRaw, r.province, r.threeWords, ...r.sections.map((s) => s.text)], q.text),
   );
   if (q.sort === "score") out.sort((a, b) => ratio(b) - ratio(a));

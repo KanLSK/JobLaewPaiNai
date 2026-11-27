@@ -53,3 +53,11 @@ test("inside a step pop-up, Escape goes back one level only", () => {
   expect(outer).not.toHaveBeenCalled();
   window.removeEventListener("keydown", outer);
 });
+
+test("the student generation is not shown on the card or in the full review", () => {
+  const { container } = render(<ElectiveCards reviews={[review]} />);
+  expect(container.textContent).toContain("Elective · โรงพยาบาลตัวอย่าง");
+  expect(container.textContent).not.toContain("SI130");
+  open();
+  expect(screen.getByRole("dialog").textContent).not.toContain("SI130");
+});

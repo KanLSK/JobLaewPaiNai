@@ -13,7 +13,7 @@ export function ElectiveCard({ review, onOpen }: { review: ElectiveReview; onOpe
         <>
           <h3 className="line-clamp-1 font-bold break-all">{review.wardRaw || "ไม่ระบุวอร์ด"}</h3>
           <p className="line-clamp-1 text-xs break-all">
-            Elective {review.year} · {review.hospital}
+            Elective · {review.hospital}
           </p>
         </>
       }

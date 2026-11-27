@@ -47,7 +47,7 @@ test("the pathway skeleton has every branch of the map", () => {
 });
 
 test("the other skeletons have the parts of their pages", () => {
-  expect(count(html(Electives), "<select")).toBe(4);
+  expect(count(html(Electives), "<select")).toBe(3);
   expect(count(html(Electives), "<article")).toBe(6);
   expect(count(html(Hospitals), "data-province=")).toBe(77);
   expect(count(html(Hospitals), "aria-pressed=")).toBe(7);

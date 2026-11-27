@@ -79,10 +79,11 @@ function Reader({ review, closeAllHref, onClose }: { review: ElectiveReview; clo
       <div className="flex max-h-[85dvh] animate-pop flex-col">
         <div className="flex items-start gap-3 border-b-2 border-ink bg-elective p-4">
           <div className="min-w-0 flex-1">
-            <div className="mb-1 flex flex-wrap gap-1.5">
-              <Chip>{review.year}</Chip>
-              {review.province && <Chip>{review.province}</Chip>}
-            </div>
+            {review.province && (
+              <div className="mb-1">
+                <Chip>{review.province}</Chip>
+              </div>
+            )}
             <h2 id="reader-title" className="text-xl font-bold break-words">{review.wardRaw || "ไม่ระบุวอร์ด"}</h2>
             <p className="text-sm break-words">{review.hospital}</p>
           </div>

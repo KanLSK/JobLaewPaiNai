@@ -4,9 +4,8 @@ import { ElectiveList } from "@/components/reviews/ElectiveList";
 
 afterEach(cleanup);
 
-test("the year filter offers the years that exist, newest first", () => {
+test("the filters do not include student generations", () => {
   const review = (id: string, year: string) => ({ id, year, hospital: "h", wardRaw: "w", specialtyId: null, overall: { label: "o", value: 5, max: 5 }, extra: [], sections: [], threeWords: null, province: null });
-  render(<ElectiveList reviews={[review("a", "SI129"), review("b", "SI131")] as never} />);
-  const select = screen.getByRole("combobox", { name: /รุ่น/ }) as HTMLSelectElement;
-  expect([...select.options].map((o) => o.value)).toEqual(["", "SI131", "SI129"]);
+  render(<ElectiveList reviews={[review("a", "SI129"), review("b", "BMSMO64")] as never} />);
+  expect(screen.getAllByRole("combobox").map((s) => s.getAttribute("aria-label"))).toEqual(["โรงพยาบาล", "ภาควิชา", "เรียงตาม"]);
 });
