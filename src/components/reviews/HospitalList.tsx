@@ -29,7 +29,7 @@ export function HospitalList({ reviews }: { reviews: HospitalReview[] }) {
           },
         ]}
       />
-      <Results total={reviews.length} shown={shown.length}>
+      <Results total={reviews.length} shown={shown.length} equalHeights>
         {shown.map((r) => (
           <HospitalCard key={r.id} review={r} />
         ))}

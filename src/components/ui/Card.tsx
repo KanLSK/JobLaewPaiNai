@@ -10,11 +10,12 @@ export const STAGE_BG: Record<StageId, string> = {
   other: "bg-other",
 };
 
-export function Card({ stage, header, children }: { stage: StageId; header: React.ReactNode; children?: React.ReactNode }) {
+/** `fill` stretches the card to its grid slot and lets the body push content to the bottom. */
+export function Card({ stage, header, fill = false, children }: { stage: StageId; header: React.ReactNode; fill?: boolean; children?: React.ReactNode }) {
   return (
-    <article className="overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-sticker">
+    <article className={`overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-sticker ${fill ? "flex h-full flex-col" : ""}`}>
       <header className={`border-b-2 border-ink px-4 py-3 ${STAGE_BG[stage]}`}>{header}</header>
-      <div className="space-y-3 p-4">{children}</div>
+      <div className={fill ? "flex flex-1 flex-col gap-3 p-4" : "space-y-3 p-4"}>{children}</div>
     </article>
   );
 }

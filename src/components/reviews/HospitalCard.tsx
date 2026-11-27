@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
-import { ReviewText } from "@/components/ui/ReviewText";
 import { Score } from "@/components/ui/Score";
 import type { HospitalReview } from "@/lib/data/types";
 import { hospitalHref } from "@/lib/hospitals";
 
+/** A fixed-shape summary; the full review and the ten scores are on the hospital's page. */
 export function HospitalCard({ review }: { review: HospitalReview }) {
   const overall = review.scores[review.scores.length - 1];
+  const href = hospitalHref(review.hospital);
   return (
     <Card
+      fill
       stage="intern"
       header={
         <>
@@ -18,24 +20,22 @@ export function HospitalCard({ review }: { review: HospitalReview }) {
             {review.trackRaw && <Chip>{review.trackRaw}</Chip>}
             {review.departmentRaw && <Chip>{review.departmentRaw}</Chip>}
           </div>
-          <h3 className="text-lg font-bold break-words">
-            <Link href={hospitalHref(review.hospital)} className="underline decoration-2 underline-offset-4">{review.hospital}</Link>
+          <h3 className="line-clamp-2 text-lg font-bold break-words">
+            <Link href={href} className="underline decoration-2 underline-offset-4">{review.hospital}</Link>
           </h3>
         </>
       }
     >
       {overall && <Score score={overall} />}
-      {review.summary && <ReviewText text={review.summary} />}
-      <details>
-        <summary className="cursor-pointer text-sm font-semibold underline">คะแนนรายด้าน</summary>
-        <ul className="mt-2 space-y-1">
-          {review.scores.map((s) => (
-            <li key={s.label}>
-              <Score score={s} />
-            </li>
-          ))}
-        </ul>
-      </details>
+      {/* Three lines are always reserved, so cards match with or without text. */}
+      <div className="min-h-[4.875rem]">
+        {review.summary ? (
+          <p className="line-clamp-3 text-sm leading-relaxed whitespace-pre-line break-words">{review.summary.replace(/\n\s*\n/g, "\n")}</p>
+        ) : (
+          <p className="text-sm text-muted">ยังไม่มีรีวิวภาพรวม</p>
+        )}
+      </div>
+      <Link href={href} className="mt-auto text-sm font-semibold underline">ดูรีวิวและคะแนนทั้งหมด →</Link>
     </Card>
   );
 }
