@@ -13,7 +13,7 @@ const review: HospitalReview = {
 test("fills its slot, clamps long text and links to the rest", () => {
   const { container } = render(<HospitalCard review={review} />);
   expect(container.querySelector("article")!.className).toContain("h-full");
-  expect(screen.getByText(/บรรทัดหนึ่ง/).className).toContain("line-clamp-3");
+  expect(screen.getByText(/บรรทัดหนึ่ง/).className).toContain("line-clamp-2");
   expect(screen.getByRole("link", { name: /ดูรีวิวและคะแนนทั้งหมด/ }).getAttribute("href")).toContain("/hospitals/");
   expect(container.querySelector("details")).toBeNull();
 });

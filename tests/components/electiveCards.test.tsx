@@ -16,7 +16,7 @@ const open = () => fireEvent.click(screen.getByRole("button", { name: /อ่า
 test("the card is a fixed-shape preview", () => {
   const { container } = render(<ElectiveCards reviews={[review]} />);
   expect(container.querySelector("article")!.className).toContain("h-full");
-  expect(screen.getByText(/ย่อหน้าหนึ่ง/).className).toContain("line-clamp-3");
+  expect(screen.getByText(/ย่อหน้าหนึ่ง/).className).toContain("line-clamp-2");
   expect(container.textContent).not.toContain("ข้อความฝาก");
   expect(screen.queryByRole("dialog")).toBeNull();
 });

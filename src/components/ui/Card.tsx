@@ -14,8 +14,8 @@ export const STAGE_BG: Record<StageId, string> = {
 export function Card({ stage, header, fill = false, children }: { stage: StageId; header: React.ReactNode; fill?: boolean; children?: React.ReactNode }) {
   return (
     <article className={`overflow-hidden rounded-2xl border-2 border-ink bg-white shadow-sticker ${fill ? "flex h-full flex-col" : ""}`}>
-      <header className={`border-b-2 border-ink px-4 py-3 ${STAGE_BG[stage]}`}>{header}</header>
-      <div className={fill ? "flex flex-1 flex-col gap-3 p-4" : "space-y-3 p-4"}>{children}</div>
+      <header className={`border-b-2 border-ink ${fill ? "px-3 py-2" : "px-4 py-3"} ${STAGE_BG[stage]}`}>{header}</header>
+      <div className={fill ? "flex flex-1 flex-col gap-2 p-3" : "space-y-3 p-4"}>{children}</div>
     </article>
   );
 }

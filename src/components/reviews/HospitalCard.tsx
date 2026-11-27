@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
-import { Chip } from "@/components/ui/Chip";
 import { Score } from "@/components/ui/Score";
 import type { HospitalReview } from "@/lib/data/types";
 import { hospitalHref } from "@/lib/hospitals";
@@ -15,22 +14,20 @@ export function HospitalCard({ review }: { review: HospitalReview }) {
       stage="intern"
       header={
         <>
-          <div className="mb-1 flex flex-wrap gap-1.5">
-            <Chip>ใช้ทุน</Chip>
-            {review.trackRaw && <Chip>{review.trackRaw}</Chip>}
-            {review.departmentRaw && <Chip>{review.departmentRaw}</Chip>}
-          </div>
-          <h3 className="line-clamp-2 text-lg font-bold break-words">
+          <h3 className="line-clamp-1 font-bold break-all">
             <Link href={href} className="underline decoration-2 underline-offset-4">{review.hospital}</Link>
           </h3>
+          <p className="line-clamp-1 text-xs break-all">
+            {["ใช้ทุน", review.departmentRaw, review.trackRaw].filter(Boolean).join(" · ")}
+          </p>
         </>
       }
     >
-      {overall && <Score score={overall} />}
-      {/* Three lines are always reserved, so cards match with or without text. */}
-      <div className="min-h-[4.875rem]">
+      {overall && <Score score={{ ...overall, label: "ภาพรวม" }} />}
+      {/* Two lines are always reserved, so cards match with or without text. */}
+      <div className="min-h-[2.85rem]">
         {review.summary ? (
-          <p className="line-clamp-3 text-sm leading-relaxed whitespace-pre-line break-words">{review.summary.replace(/\n\s*\n/g, "\n")}</p>
+          <p className="line-clamp-2 text-sm leading-relaxed whitespace-pre-line break-words">{review.summary.replace(/\n\s*\n/g, "\n")}</p>
         ) : (
           <p className="text-sm text-muted">ยังไม่มีรีวิวภาพรวม</p>
         )}

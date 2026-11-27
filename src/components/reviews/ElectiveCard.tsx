@@ -1,5 +1,4 @@
 import { Card } from "@/components/ui/Card";
-import { Chip } from "@/components/ui/Chip";
 import { Score } from "@/components/ui/Score";
 import type { ElectiveReview } from "@/lib/data/types";
 
@@ -12,13 +11,10 @@ export function ElectiveCard({ review, onOpen }: { review: ElectiveReview; onOpe
       stage="elective"
       header={
         <>
-          <div className="mb-1 flex flex-wrap gap-1.5">
-            <Chip>Elective</Chip>
-            <Chip>{review.year}</Chip>
-            {review.province && <Chip>{review.province}</Chip>}
-          </div>
-          <h3 className="line-clamp-1 text-lg font-bold break-all">{review.wardRaw || "ไม่ระบุวอร์ด"}</h3>
-          <p className="line-clamp-1 text-sm break-all">{review.hospital}</p>
+          <h3 className="line-clamp-1 font-bold break-all">{review.wardRaw || "ไม่ระบุวอร์ด"}</h3>
+          <p className="line-clamp-1 text-xs break-all">
+            Elective {review.year} · {review.hospital}
+          </p>
         </>
       }
     >
@@ -28,10 +24,10 @@ export function ElectiveCard({ review, onOpen }: { review: ElectiveReview; onOpe
           <Score key={s.label} score={s} />
         ))}
       </div>
-      {/* Three lines are always reserved, so cards match however much was written. */}
-      <div className="min-h-[4.875rem]">
+      {/* Two lines are always reserved, so cards match however much was written. */}
+      <div className="min-h-[2.85rem]">
         {preview ? (
-          <p className="line-clamp-3 text-sm leading-relaxed whitespace-pre-line break-words">{preview}</p>
+          <p className="line-clamp-2 text-sm leading-relaxed whitespace-pre-line break-words">{preview}</p>
         ) : (
           <p className="text-sm text-muted">ยังไม่มีรีวิวที่เขียนไว้</p>
         )}
