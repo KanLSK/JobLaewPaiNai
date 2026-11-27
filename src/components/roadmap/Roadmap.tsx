@@ -1,8 +1,35 @@
-import { CAREERS, ELECTIVE_DEPARTMENTS, SPECIALTIES, TRACKS, findStep, type Step } from "@/config/pathway";
+import { CAREERS, ELECTIVE_DEPARTMENTS, SPECIALTIES, findStep, type Step } from "@/config/pathway";
 import { Branch } from "./Branch";
 import { StepNode } from "./StepNode";
 
 const Spine = () => <div aria-hidden className="h-10 border-l-4 border-dotted border-ink" />;
+
+/** A labelled box for one part of the flowchart. */
+function Group({ label, className = "", children }: { label: string; className?: string; children: React.ReactNode }) {
+  return (
+    <div role="group" aria-label={label} className={`flex w-full flex-col items-center gap-3 rounded-3xl border-2 border-ink p-3 ${className}`}>
+      <p className="text-center font-display font-bold">{label}</p>
+      {children}
+    </div>
+  );
+}
+
+/** The years that follow one choice, top to bottom. */
+function Years({ title, steps }: { title?: string; steps: string[] }) {
+  return (
+    <div className="flex w-full flex-col items-center text-center text-sm">
+      {title && <p className="mb-1 font-semibold">{title}</p>}
+      <ol className="flex w-full flex-col items-center">
+        {steps.map((step, i) => (
+          <li key={step} className="flex w-full flex-col items-center">
+            {i > 0 && <span aria-hidden>↓</span>}
+            <span className="rounded-xl border border-ink bg-paper px-2 py-1">{step}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
 
 type Side = "left" | "right";
 
@@ -30,6 +57,7 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
       ))}
     </ul>
   );
+  const track = (id: string) => <StepNode step={findStep(id)!} count={counts[id] ?? 0} />;
   const holds = (parent: string) => selected?.parentId === parent;
   const wards = ELECTIVE_DEPARTMENTS.filter((s) => (counts[s.id] ?? 0) > 0);
 
@@ -67,7 +95,48 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
       {node("graduate")}
       <Spine />
 
-      {hub("intern", "ใช้ทุน", TRACKS, `${TRACKS.length} tracks`)}
+      <div className="relative grid w-full items-start gap-4 lg:grid-cols-[3fr_1fr] lg:pt-6">
+        {/* Joins the middles of the two columns (3 : 1 with a 1rem gap). */}
+        <span aria-hidden className="absolute top-0 right-[calc(12.5%-0.125rem)] left-[calc(37.5%-0.375rem)] hidden h-[3px] bg-ink lg:block" />
+        <section aria-label="ใช้ทุน" className="relative flex flex-col items-center gap-3">
+          <span aria-hidden className="absolute -top-6 left-1/2 hidden h-6 w-[3px] -translate-x-1/2 bg-ink lg:block" />
+          {node("intern")}
+          <div className="grid w-full items-start gap-3 md:grid-cols-[1fr_2fr]">
+            <Group label="ต้นสังกัดอื่น ๆ" className="bg-white">
+              <p className="text-center text-xs text-muted">เช่น โรงเรียนแพทย์ (ภาควิชา Pre-Clinic / Clinic)</p>
+              {track("fixed-medschool")}
+              {track("other-hospital")}
+              {track("military")}
+              <Years steps={["Intern 1", "Intern 2–3 ตามข้อตกลงของต้นสังกัด หรือ Resident"]} />
+            </Group>
+            <Group label="สังกัดกระทรวงสาธารณสุข" className="bg-white">
+              <div className="grid w-full items-start gap-3 sm:grid-cols-[2fr_1fr]">
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-sm font-semibold">แพทย์พี่เลี้ยง (Fix Ward)</p>
+                  {track("fixed-moph")}
+                  <div className="grid w-full grid-cols-2 items-start gap-2">
+                    <Years title="สอบบอร์ด" steps={["Intern 1", "Resident", "สอบบอร์ด"]} />
+                    <Years title="ไม่สอบบอร์ด" steps={["Intern 1", "Intern 2–3", "Resident หรือ GP, อื่น ๆ"]} />
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-sm font-semibold">ไม่ Fix Ward (จับฉลาก)</p>
+                  {track("lottery")}
+                  <Years steps={["Intern 1", "ได้ใบเพิ่มพูนประสบการณ์", "Intern 2–3 หรือลาออก"]} />
+                </div>
+              </div>
+            </Group>
+          </div>
+        </section>
+        <section aria-label="ไม่ใช้ทุน" className="relative">
+          <span aria-hidden className="absolute -top-6 left-1/2 hidden h-6 w-[3px] -translate-x-1/2 bg-ink lg:block" />
+          <Group label="ไม่ใช้ทุน (จ่ายค่าปรับ)" className="bg-intern">
+            <p className="text-center text-sm">ทำงานโรงพยาบาลเอกชน, เรียนต่อ, เปิดคลินิก</p>
+            {track("abroad")}
+          </Group>
+        </section>
+      </div>
+      <p className="mt-3 text-center text-xs text-muted">*เส้นทางอาชีพหมอไม่ตายตัว ขึ้นอยู่กับเส้นทางของแต่ละคน · ดัดแปลงจากแผนผังของ We Mahidol</p>
 
       <Spine />
       <p className="rounded-full border-2 border-ink bg-ink px-5 py-2 font-display font-bold text-paper">◆ เลือกเส้นทาง</p>

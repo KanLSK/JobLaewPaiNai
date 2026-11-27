@@ -52,3 +52,17 @@ test("elective branches appear only for departments that have reviews", () => {
   expect(node("elective-ent")).toBeNull();
   expect(node("elective-other")).toBeNull();
 });
+
+test("the middle of the map follows the new flowchart", () => {
+  view();
+  const inside = (name: string) => [...screen.getByRole("group", { name }).querySelectorAll("[data-step]")].map((n) => n.getAttribute("data-step"));
+  expect(inside("ต้นสังกัดอื่น ๆ")).toEqual(["fixed-medschool", "other-hospital", "military"]);
+  expect(inside("สังกัดกระทรวงสาธารณสุข")).toEqual(["fixed-moph", "lottery"]);
+  expect(inside("ไม่ใช้ทุน (จ่ายค่าปรับ)")).toEqual(["abroad"]);
+  expect(screen.getByRole("group", { name: "สังกัดกระทรวงสาธารณสุข" }).textContent).toContain("ไม่สอบบอร์ด");
+});
+
+test("a step with reference material links to the guide", () => {
+  view("lottery");
+  expect(screen.getByRole("link", { name: /อ่านในคู่มือ/ }).getAttribute("href")).toBe("/guide#register");
+});

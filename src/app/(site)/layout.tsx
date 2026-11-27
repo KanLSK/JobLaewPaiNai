@@ -9,6 +9,7 @@ const NAV = [
   ["/", "เส้นทาง"],
   ["/electives", "Elective"],
   ["/hospitals", "โรงพยาบาลใช้ทุน"],
+  ["/guide", "คู่มือ"],
 ] as const;
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {

@@ -17,6 +17,17 @@ const ABOUT: Record<StageId, string> = {
   other: "เส้นทางอื่นของคนจบแพทย์",
 };
 
+/** Steps that have a matching section on the guide page. */
+const GUIDE: Record<string, string> = {
+  graduate: "register",
+  intern: "register",
+  lottery: "register",
+  "fixed-moph": "fixward",
+  "fixed-medschool": "timeline",
+  military: "timeline",
+  resident: "eligibility",
+};
+
 /** Only the selected step's reviews are rendered into the panel. */
 export function RoadmapView({ stepId, electives, hospitals }: { stepId?: string; electives: ElectiveReview[]; hospitals: HospitalReview[] }) {
   const step = stepId ? findStep(stepId) : null;
@@ -31,6 +42,7 @@ export function RoadmapView({ stepId, electives, hospitals }: { stepId?: string;
       {step && content && (
         <StepPanel key={step.id} stepId={step.id} title={step.parentId === "elective" ? `Elective · ${step.label}` : step.label}>
           <p className="text-muted">{ABOUT[step.stage]}</p>
+          {GUIDE[step.id] && <Link href={`/guide#${GUIDE[step.id]}`} className="block text-sm font-semibold underline">อ่านในคู่มือ</Link>}
           {content.electives.length > 0 && <Link href="/electives" className="block text-sm font-semibold underline">ค้นหาและกรองรีวิว Elective ทั้งหมด</Link>}
           {content.hospitals.length > 0 && <Link href="/hospitals" className="block text-sm font-semibold underline">ค้นหาและกรองโรงพยาบาลใช้ทุน</Link>}
           {content.electives.length + content.hospitals.length > 0 && (
