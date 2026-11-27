@@ -1,4 +1,3 @@
-import "server-only";
 import path from "node:path";
 import { JWT } from "google-auth-library";
 import { buildAliases } from "./aliases";
@@ -7,6 +6,7 @@ import { ALIAS_COLUMNS, HOSPITAL_COLUMNS, SI129_COLUMNS, SI130_COLUMNS } from ".
 import { csvSource } from "./csvSource";
 import { parseHospitals, parseSI129, parseSI130 } from "./parse";
 import { sheetsSource } from "./sheetsSource";
+import { fileRepository } from "./snapshot";
 import type { ColumnSpec, ElectiveReview, HospitalReview, TableId, TableSource } from "./types";
 
 export interface ReviewRepository {
@@ -46,7 +46,7 @@ function required(name: string): string {
   return value;
 }
 
-function localCsv(): TableSource {
+export function localCsv(): TableSource {
   const data = (file: string) => path.join(process.cwd(), "Data", file);
   return csvSource({
     si129: data("Review Elective SI129 - Form Responses 1.csv"),
@@ -82,9 +82,12 @@ let repository: ReviewRepository | null = null;
 
 export function getRepository(): ReviewRepository {
   if (!repository) {
-    const kind = required("DATA_SOURCE");
-    if (kind !== "csv" && kind !== "sheets") throw new Error(`DATA_SOURCE must be "csv" or "sheets"`);
-    repository = createRepository(kind === "csv" ? localCsv() : googleSheet(), { approveAll: approveAllEnabled(process.env) });
+    // With no setting the site runs on its own from the file shipped with it.
+    const kind = process.env.DATA_SOURCE || "file";
+    if (kind === "file") repository = fileRepository(path.join(process.cwd(), "content", "reviews.json"));
+    else if (kind === "csv" || kind === "sheets")
+      repository = createRepository(kind === "csv" ? localCsv() : googleSheet(), { approveAll: approveAllEnabled(process.env) });
+    else throw new Error(`DATA_SOURCE must be "file", "csv" or "sheets"`);
   }
   return repository;
 }

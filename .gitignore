@@ -1,6 +1,8 @@
 node_modules
 .next
 /Data/
+# Cleaned review text. Remove this line only when it is cleared for publishing.
+/content/
 .env*
 !.env.example
 .DS_Store

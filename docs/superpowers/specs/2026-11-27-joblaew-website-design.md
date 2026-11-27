@@ -108,6 +108,9 @@ Approval, private-column exclusion and no search indexing still apply.
 
 ## 8. Data
 
+**Added 2026-11-27 at your request:** with no settings the site reads `content/reviews.json`, a cleaned copy made by
+`npm run export-data`, so it runs without Google Sheets. Google Sheets remains an option.
+
 - A **private** Google Sheet, shared read-only with a service account. It is not "published to the web".
 - Tabs: SI129 responses, SI130 responses, hospital reviews, and `aliases`.
 - Each review tab gets an `approved` column. **(my call)** Only rows marked `yes` are shown, including the existing 136 elective responses, so someone must review them before launch.

@@ -15,7 +15,17 @@ Open http://localhost:3000. This reads the CSV files in `Data/` and shows unappr
 `DEV_APPROVE_ALL` only works in `npm run dev` with `DATA_SOURCE=csv`.
 The preview is reachable only from this computer. Keep it that way: it shows unapproved rows.
 
-## Going live
+## Going live without Google Sheets
+
+```bash
+npm run export-data   # Data/*.csv -> content/reviews.json
+```
+
+The site reads that file when `DATA_SOURCE` is unset, so Vercel needs no variables. It holds only what the pages show.
+Put review ids to leave out in `config/exclude.txt`. The file is git-ignored until you remove `/content/` from `.gitignore`.
+**Committing it publishes the review text**, and with login off the site shows it to anyone.
+
+## Going live with Google Sheets
 
 ### 1. Google sign-in (optional, off by default)
 Skip this section to run without login. To switch it on, set `REQUIRE_LOGIN=1` and do the steps below.
