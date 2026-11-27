@@ -1,5 +1,6 @@
+import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
-import { safeCallback } from "@/lib/auth/allowed";
+import { devBypassEnabled, safeCallback } from "@/lib/auth/allowed";
 
 export default async function SignInPage({
   searchParams,
@@ -7,6 +8,7 @@ export default async function SignInPage({
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;
 }) {
   const { error, callbackUrl } = await searchParams;
+  if (devBypassEnabled(process.env)) redirect(safeCallback(callbackUrl));
 
   async function google() {
     "use server";

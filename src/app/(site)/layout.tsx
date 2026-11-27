@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signOut } from "@/auth";
+import { devBypassEnabled } from "@/lib/auth/allowed";
 import { requireStudent } from "@/lib/auth/session";
 
 export const dynamic = "force-dynamic";
@@ -30,9 +31,11 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             </Link>
           ))}
         </nav>
-        <form action={leave} className="ml-auto">
-          <button className="cursor-pointer text-sm underline">ออกจากระบบ</button>
-        </form>
+        {!devBypassEnabled(process.env) && (
+          <form action={leave} className="ml-auto">
+            <button className="cursor-pointer text-sm underline">ออกจากระบบ</button>
+          </form>
+        )}
       </header>
       <main className="flex-1 py-4">{children}</main>
       {report && (
