@@ -8,11 +8,13 @@
     "start": "next start",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "export-data": "tsx scripts/export-data.ts"
+    "export-data": "tsx scripts/export-data.ts",
+    "import-mongo": "tsx --env-file=.env.local scripts/import-mongo.ts"
   },
   "dependencies": {
     "csv-parse": "^7.0.3",
     "google-auth-library": "^11.3.4",
+    "mongodb": "^7.9.1",
     "next": "^16.4.6",
     "next-auth": "^5.0.0-beta.32",
     "react": "^19.3.1",
