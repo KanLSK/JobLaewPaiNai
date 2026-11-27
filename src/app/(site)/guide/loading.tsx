@@ -1,5 +1,10 @@
-import { Loading } from "@/components/ui/Loading";
+import { GuideContent } from "@/components/guide/GuideContent";
+import { Skeleton } from "@/components/skeleton/Skeleton";
 
 export default function GuideLoading() {
-  return <Loading title="คู่มือ" shape="list" />;
+  return (
+    <Skeleton>
+      <GuideContent />
+    </Skeleton>
+  );
 }

@@ -1,5 +1,14 @@
-import { Loading } from "@/components/ui/Loading";
+import { HospitalList } from "@/components/reviews/HospitalList";
+import { Skeleton } from "@/components/skeleton/Skeleton";
+import { hospitals } from "@/components/skeleton/placeholders";
 
 export default function HospitalsLoading() {
-  return <Loading title="โรงพยาบาลใช้ทุน" shape="cards" />;
+  return (
+    <>
+      <h1 className="mb-4 text-3xl font-bold">โรงพยาบาลใช้ทุน</h1>
+      <Skeleton>
+        <HospitalList reviews={hospitals} />
+      </Skeleton>
+    </>
+  );
 }

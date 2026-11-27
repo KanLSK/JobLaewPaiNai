@@ -37,3 +37,19 @@ h1, h2, h3 { font-family: var(--font-display); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Loading skeletons: real components, drawn as grey shapes. Lines between branches keep their ink. */
+.skeleton, .skeleton * { color: transparent !important; box-shadow: none !important; text-decoration-color: transparent !important; }
+.skeleton ::placeholder { color: transparent !important; }
+.skeleton :is(a, article, header, details, button, select, input, textarea, [role="group"]):not([data-wire]) { background-color: #fff !important; }
+.skeleton :is(a, button, select, input, textarea, article, header, details, [role="group"], li > div, ol span):not([data-wire]) { border-color: #cfc6b8 !important; }
+.skeleton :is(h1, h2, h3, p, dt, dd, summary, label, strong, span:not([aria-hidden]), li:not(:has(*))):not([data-wire]) {
+  background-color: #e9e2d7 !important;
+  border-color: transparent !important;
+  border-radius: 0.5rem;
+}
+.skeleton :is([data-step], button, nav a) { background-color: #f1ebe2 !important; }
+.skeleton ol span[aria-hidden] { color: #cfc6b8 !important; }
+/* Plain boxes keep their outline but lighter; aria-hidden ones are the connecting lines. */
+.skeleton :is(div, li, section):not([aria-hidden], [data-wire]) { border-color: #cfc6b8 !important; }
+.skeleton :is(h1, h2, h3, p) a { background-color: transparent !important; }
