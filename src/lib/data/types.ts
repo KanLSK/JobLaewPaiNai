@@ -22,7 +22,8 @@ export interface Score {
 
 export interface ElectiveReview {
   id: string;
-  year: "SI129" | "SI130";
+  /** Student generation, e.g. "SI130". */
+  year: string;
   hospital: string;
   wardRaw: string;
   specialtyId: string | null;
@@ -42,4 +43,12 @@ export interface HospitalReview {
   trackRaw: string;
   specialtyId: string | null;
   departmentRaw: string;
+}
+
+/** A short experience attached to one roadmap step. */
+export interface NoteEntry {
+  id: string;
+  stepId: string;
+  title: string;
+  text: string;
 }

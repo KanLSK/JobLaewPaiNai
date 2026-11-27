@@ -16,6 +16,7 @@ export function ElectiveList({ reviews }: { reviews: ElectiveReview[] }) {
   const [sort, setSort] = useState<"" | "score" | "hospital">("");
 
   const shown = filterElectives(reviews, { text, hospital, specialtyId, year, sort: sort || undefined });
+  const years = [...new Set(reviews.map((r) => r.year))].sort().reverse();
   const hospitals = [...new Set(reviews.map((r) => r.hospital))].sort((a, b) => a.localeCompare(b, "th"));
 
   return (
@@ -31,7 +32,7 @@ export function ElectiveList({ reviews }: { reviews: ElectiveReview[] }) {
             onChange: setSpecialty,
             options: SPECIALTIES.filter((s) => reviews.some((r) => r.specialtyId === s.id)).map((s) => ({ value: s.id, label: s.label })),
           },
-          { label: "รุ่น", value: year, onChange: setYear, options: ["SI130", "SI129"].map((y) => ({ value: y, label: y })) },
+          { label: "รุ่น", value: year, onChange: setYear, options: years.map((y) => ({ value: y, label: y })) },
           {
             label: "เรียงตาม",
             all: "เรียงตาม: ค่าเริ่มต้น",
