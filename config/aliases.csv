@@ -1,0 +1,121 @@
+kind,from,to
+hospital,SI,ศิริราช
+hospital,siriraj,ศิริราช
+hospital,ศิริรา,ศิริราช
+hospital,ศรร,ศิริราช
+hospital,รพ.ศิริราช,ศิริราช
+hospital,โรงพยาบาลศิริราช,ศิริราช
+hospital,Ramathibodi hospital,โรงพยาบาลรามาธิบดี
+hospital,รามาธิบดี,โรงพยาบาลรามาธิบดี
+hospital,รามาจักรี,โรงพยาบาลรามาธิบดีจักรีนฤบดินทร์
+hospital,CNMI (รามาจักรีนฤบดินทร),โรงพยาบาลรามาธิบดีจักรีนฤบดินทร์
+hospital,มหาราชนครเชียงใหม่,โรงพยาบาลมหาราชนครเชียงใหม่
+hospital,โรงพยาบาลมหาราชนครเชียงใหม่ (มหาวิทยาลัยเชียงใหม่),โรงพยาบาลมหาราชนครเชียงใหม่
+hospital,เชียงรายประชานุเคราะห์,โรงพยาบาลเชียงรายประชานุเคราะห์
+hospital,รพ.เชียงรายประชานุเคราะห์,โรงพยาบาลเชียงรายประชานุเคราะห์
+hospital,เชียงรายประชานุเคราห์,โรงพยาบาลเชียงรายประชานุเคราะห์
+hospital,สุราษฎร์ธานี,โรงพยาบาลสุราษฎร์ธานี
+hospital,รพ.สุราษฎร์ธานี,โรงพยาบาลสุราษฎร์ธานี
+hospital,รพ.ระนอง,โรงพยาบาลระนอง
+hospital,รพ.สวรรค์ประชารักษ์,โรงพยาบาลสวรรค์ประชารักษ์
+hospital,สวรรค์ประชารักษ์,โรงพยาบาลสวรรค์ประชารักษ์
+hospital,โรงพยาบาลสงขลานครินทร์ (มอ),โรงพยาบาลสงขลานครินทร์
+hospital,โรงพยาบาลสงขลานครินทร์ (มอ.),โรงพยาบาลสงขลานครินทร์
+hospital,รพ.ชลบุรี,โรงพยาบาลชลบุรี
+hospital,รพ แพร่,โรงพยาบาลแพร่
+hospital,รพ.ลำปาง,โรงพยาบาลลำปาง
+hospital,รพ.หาดใหญ่,โรงพยาบาลหาดใหญ่
+hospital,รพ.ตรัง,โรงพยาบาลตรัง
+hospital,รพ. ศรีนครินทร์ ขอนแก่น,โรงพยาบาลศรีนครินทร์ ขอนแก่น
+hospital,สระบุรี,โรงพยาบาลสระบุรี
+hospital,แม่สอด,โรงพยาบาลแม่สอด
+hospital,พุทธชินราช,โรงพยาบาลพุทธชินราช
+hospital,รพ.พระจอมเกล้าจ.เพชรบุรี,โรงพยาบาลพระจอมเกล้า เพชรบุรี
+department,Med,อายุรศาสตร์
+department,เมด,อายุรศาสตร์
+department,อายุรกรรม,อายุรศาสตร์
+department,Gen med,อายุรศาสตร์
+department,General medicine,อายุรศาสตร์
+department,Med cardio,อายุรศาสตร์
+department,Med cardio (CCU/ICCU),อายุรศาสตร์
+department,Medicine cardio,อายุรศาสตร์
+department,Medicine cardiology,อายุรศาสตร์
+department,Cardio med,อายุรศาสตร์
+department,หทัยวิทยา(cardiology),อายุรศาสตร์
+department,Med GI,อายุรศาสตร์
+department,GI med,อายุรศาสตร์
+department,เมด hemato,อายุรศาสตร์
+department,เมดฮีมาโต,อายุรศาสตร์
+department,Med hemato,อายุรศาสตร์
+department,โลหิตวิทยา,อายุรศาสตร์
+department,วักกะวิทยา (nephro med),อายุรศาสตร์
+department,เมดเนฟโฟร,อายุรศาสตร์
+department,med nephro,อายุรศาสตร์
+department,วักกะ nephro-med,อายุรศาสตร์
+department,นิวโรเมด,อายุรศาสตร์
+department,เมดนิวโร,อายุรศาสตร์
+department,Med neuro,อายุรศาสตร์
+department,อายุรศาสตร์ สาขาประสาทวิทยา,อายุรศาสตร์
+department,Med ID,อายุรศาสตร์
+department,โรคติดเชื้อ,อายุรศาสตร์
+department,อายุรศาสตร์โรคจิดเชื้อและเวชศาสตร์เขตร้อน,อายุรศาสตร์
+department,อายุรศาสตร์ สาขาโรควิชาติดเชื้อ,อายุรศาสตร์
+department,อายุรศาสตร์ ต่อมไร้ท่อ,อายุรศาสตร์
+department,ระบบต่อมไร้ท่อ,อายุรศาสตร์
+department,Med chest,อายุรศาสตร์
+department,General surgery,ศัลยศาสตร์
+department,Gen Sx,ศัลยศาสตร์
+department,ศัล,ศัลยศาสตร์
+department,ศัลย์,ศัลยศาสตร์
+department,ศัลยกรรม,ศัลยศาสตร์
+department,ศัลยกรรมทั่วไป,ศัลยศาสตร์
+department,ศัลยกรรม ทั่วไป,ศัลยศาสตร์
+department,ศัลยศาสตร์ทั่วไป,ศัลยศาสตร์
+department,ศัลทั่วไป,ศัลยศาสตร์
+department,ศัลย์ทั่วไป,ศัลยศาสตร์
+department,เจนศัลย์,ศัลยศาสตร์
+department,ศัลย์ทั่วไป hpb,ศัลยศาสตร์
+department,ศัลย์ hnb,ศัลยศาสตร์
+department,ศัลย์ HPB,ศัลยศาสตร์
+department,ศัลvascular,ศัลยศาสตร์
+department,ประสาทศัลยศาสตร์,ศัลยศาสตร์
+department,กุมารศัลยศาสตร์,ศัลยศาสตร์
+department,ศัลยกรรมตกแต่ง (ศัลย์พลาสติก),ศัลยศาสตร์
+department,ศัลยศาสตร์ตกแต่ง,ศัลยศาสตร์
+department,ศัลยศาสตร์ตกแต่งและเสริมสร้าง,ศัลยศาสตร์
+department,ศัลย์พลาสติก,ศัลยศาสตร์
+department,Plastic surgery,ศัลยศาสตร์
+department,ศัลย์ CVT,ศัลยศาสตร์
+department,CVT,ศัลยศาสตร์
+department,ศัลยศาสตร์หัวใจและทรวงอก,ศัลยศาสตร์
+department,ศัลยศาสตร์ MIS,ศัลยศาสตร์
+department,ศัลยกรรม Upper GI,ศัลยศาสตร์
+department,Upper GI Surgery,ศัลยศาสตร์
+department,"ศัลย์ศาสตร์, อุบัติเหตุฉุกเฉิน",ศัลยศาสตร์
+department,Ortho,ศัลยศาสตร์ออร์โธปิดิคส์และกายภาพบำบัด
+department,Orthopedic,ศัลยศาสตร์ออร์โธปิดิคส์และกายภาพบำบัด
+department,Orthopedics,ศัลยศาสตร์ออร์โธปิดิคส์และกายภาพบำบัด
+department,gyne,สูติศาสตร์-นรีเวชวิทยา
+department,Ob-gyne,สูติศาสตร์-นรีเวชวิทยา
+department,คลินิกเฉพาะโรคทางนารีเวช,สูติศาสตร์-นรีเวชวิทยา
+department,นรีเวช gyne ultrasound clinic & infertile clinic,สูติศาสตร์-นรีเวชวิทยา
+department,Infertile and colposcopy clinic,สูติศาสตร์-นรีเวชวิทยา
+department,นรีเวช onco-infertile,สูติศาสตร์-นรีเวชวิทยา
+department,Colpo clinic + infertile clinic,สูติศาสตร์-นรีเวชวิทยา
+department,จิตเวช,จิตเวชศาสตร์
+department,จว.เด็กและวัยรุ่น,จิตเวชศาสตร์
+department,จิตเวชเด็กและวัยรุ่น,จิตเวชศาสตร์
+department,จิตเวช(ผู้ใหญ่),จิตเวชศาสตร์
+department,กุมารสาขาจิตเวช,จิตเวชศาสตร์
+department,เด็ก,กุมารเวชศาสตร์
+department,Pediatric Hemato and oncology,กุมารเวชศาสตร์
+department,ER,เวชศาสตร์ฉุกเฉิน
+department,Emer Med,เวชศาสตร์ฉุกเฉิน
+department,ENT,โสต นาสิก ลาริงซ์วิทยา
+department,รังสี,รังสีวิทยา
+department,รังสีรักษา,รังสีวิทยา
+department,Intervention radiation,รังสีวิทยา
+department,นิติเวช,นิติเวชศาสตร์
+track,จับฉลากใช้ทุน สังกัดกระทรวงสาธารณสุข,จับฉลากใช้ทุน สังกัดกระทรวงสาธารณสุข
+track,Fixed สอบบอร์ด,Fixed Ward สังกัดกระทรวงสาธารณสุข (Fixed ไม่สอบบอร์ด / Fixed สอบบอร์ด)
+track,Fixed ไม่สอบบอร์ด,Fixed Ward สังกัดกระทรวงสาธารณสุข (Fixed ไม่สอบบอร์ด / Fixed สอบบอร์ด)
