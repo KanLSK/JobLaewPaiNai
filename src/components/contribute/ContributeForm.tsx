@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import Link from "next/link";
+import { useActionState, useRef, useState } from "react";
 import { SPECIALTIES, TRACKS } from "@/config/pathway";
 import { HOSPITAL_SCORE_HEADERS } from "@/lib/data/columns";
 import type { SubmitResult } from "@/lib/entries/submit";
@@ -9,50 +10,20 @@ import { LONG, NOTE_STEPS, SHORT } from "@/lib/entries/validate";
 
 export type FormState = (SubmitResult & { kind: Kind; attempt: number }) | null;
 
-const TABS: [Kind, string][] = [
-  ["elective", "Elective"],
-  ["hospital", "โรงพยาบาลใช้ทุน"],
-  ["note", "เส้นทางอื่น"],
-];
 const box = "w-full min-w-0 rounded-xl border-2 border-ink bg-white px-3 py-2 text-base";
 const button = "cursor-pointer rounded-full border-2 border-ink px-4 py-2 font-semibold";
 
 interface Props {
   action: (previous: FormState, formData: FormData) => Promise<FormState>;
   hospitals: string[];
-  initialKind: Kind;
+  kind: Kind;
   initialStep?: string;
 }
 
-export function ContributeForm(props: Props) {
-  const [kind, setKind] = useState<Kind>(props.initialKind);
-  return (
-    <>
-      <div className="mb-4 flex flex-wrap gap-2">
-        {TABS.map(([id, label]) => (
-          <button key={id} type="button" aria-pressed={kind === id} onClick={() => setKind(id)} className={`${button} ${kind === id ? "bg-graduate" : "bg-white"}`}>
-            {label}
-          </button>
-        ))}
-      </div>
-      <datalist id="hospital-names">
-        {props.hospitals.map((name) => (
-          <option key={name} value={name} />
-        ))}
-      </datalist>
-      {/* All three stay on the page, so looking at another tab loses nothing. */}
-      {TABS.map(([id]) => (
-        <div key={id} hidden={kind !== id}>
-          <KindForm {...props} kind={id} initialStep={id === props.initialKind ? props.initialStep : undefined} />
-        </div>
-      ))}
-    </>
-  );
-}
-
-function KindForm({ action, kind, initialStep }: Props & { kind: Kind }) {
+export function ContributeForm({ action, hospitals, kind, initialStep }: Props) {
   const [state, send, pending] = useActionState(action, null);
   const [sent, setSent] = useState(0);
+  const typed = useRef(false);
 
   const failed = state && !state.ok ? state : null;
   const done = state?.ok && state.attempt !== sent;
@@ -87,18 +58,44 @@ function KindForm({ action, kind, initialStep }: Props & { kind: Kind }) {
     select(name, `${label} (1–5)`, [1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: String(n) })), required);
   const steps = (list: { id: string; label: string }[]) => list.map((s) => ({ value: s.id, label: s.label }));
   const departments = [...steps(SPECIALTIES), { value: "other", label: "อื่นๆ" }];
-  const hospital = input("hospital", "โรงพยาบาล", true, "พิมพ์หรือเลือกจากรายการ", "hospital-names");
+  const hospital = (
+    <>
+      {input("hospital", "โรงพยาบาล", true, "พิมพ์หรือเลือกจากรายการ", "hospital-names")}
+      <datalist id="hospital-names">
+        {hospitals.map((name) => (
+          <option key={name} value={name} />
+        ))}
+      </datalist>
+    </>
+  );
+  const back = (
+    <Link
+      href="/contribute"
+      onClick={(e) => {
+        // Leaving this page empties the form.
+        if (typed.current && !done && !window.confirm("ข้อความที่พิมพ์ไว้จะหายไป กลับไปเลือกประเภทอื่น?")) e.preventDefault();
+      }}
+      className="mb-4 inline-block text-sm font-semibold underline"
+    >
+      ← เลือกประเภทอื่น
+    </Link>
+  );
 
   return (
     <>
+      {back}
+      <p className="mb-4 text-muted">ทุกรายการจะถูกตรวจก่อนแสดงบนเว็บ</p>
       {done ? (
         <div role="status" className="space-y-3 rounded-2xl border-2 border-ink bg-white p-4">
           <p className="font-bold">ได้รับแล้ว รอตรวจสอบ ขอบคุณครับ</p>
-          <button type="button" onClick={() => setSent(state.attempt)} className={`${button} bg-white`}>ส่งอีกรายการ</button>
+          <button type="button" onClick={() => {
+              typed.current = false;
+              setSent(state.attempt);
+            }} className={`${button} bg-white`}>ส่งอีกรายการ</button>
         </div>
       ) : (
         // Remounted for every reply, so the typed values come back after React resets the form.
-        <form key={state?.attempt ?? 0} action={send} className="space-y-4">
+        <form key={state?.attempt ?? 0} action={send} onInput={() => (typed.current = true)} className="space-y-4">
           <input type="hidden" name="kind" value={kind} />
           <div aria-hidden className="absolute -left-[9999px]">
             <label>

@@ -1,10 +1,11 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import Home from "@/app/(site)/(home)/loading";
 import Admin from "@/app/(site)/admin/loading";
-import Contribute from "@/app/(site)/contribute/loading";
+import Contribute from "@/app/(site)/contribute/(chooser)/loading";
+import ContributeKind from "@/app/(site)/contribute/[kind]/loading";
 import Electives from "@/app/(site)/electives/loading";
 import Guide from "@/app/(site)/guide/loading";
-import Hospitals from "@/app/(site)/hospitals/loading";
+import Hospitals from "@/app/(site)/hospitals/(list)/loading";
 import Hospital from "@/app/(site)/hospitals/[name]/loading";
 import { SPECIALTIES, TRACKS, CAREERS } from "@/config/pathway";
 
@@ -47,12 +48,19 @@ test("the other skeletons have the parts of their pages", () => {
   expect(count(html(Hospitals), "<article")).toBe(6);
   expect(count(html(Hospital), "<li")).toBe(20);
   for (const id of ["levels", "register", "timeline", "eligibility", "sources"]) expect(html(Guide)).toContain(`id="${id}"`);
-  expect(html(Contribute)).toContain('name="consent"');
+  expect(html(Contribute).split("aspect-square").length - 1).toBe(3);
+  expect(html(ContributeKind)).toContain('name="consent"');
   expect(count(html(Admin), "<article")).toBe(2);
 });
 
-test("the pathway skeleton belongs to the pathway page only", async () => {
-  const { existsSync } = await import("node:fs");
-  expect(existsSync("src/app/(site)/loading.tsx")).toBe(false);
-  expect(existsSync("src/app/(site)/(home)/page.tsx")).toBe(true);
+test("no skeleton also covers a page below it", async () => {
+  const { existsSync, readdirSync } = await import("node:fs");
+  const root = "src/app/(site)";
+  const files = readdirSync(root, { recursive: true }).map(String);
+  for (const loading of files.filter((f) => f.endsWith("loading.tsx"))) {
+    const folder = loading.slice(0, -"loading.tsx".length);
+    const below = files.filter((f) => f.startsWith(folder) && f.endsWith("page.tsx") && f !== `${folder}page.tsx`);
+    expect(below, loading).toEqual([]);
+    expect(existsSync(`${root}/${folder}page.tsx`), loading).toBe(true);
+  }
 });

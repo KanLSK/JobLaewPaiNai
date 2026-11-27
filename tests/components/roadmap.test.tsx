@@ -75,7 +75,7 @@ test("a step shows its notes", () => {
   expect(dialog.textContent).not.toContain("รอข้อมูล");
 });
 
-test.each([["extern", "/contribute?kind=note&step=extern"], ["lottery", "/contribute?kind=hospital&step=lottery"], ["elective", "/contribute?kind=elective"]])(
+test.each([["extern", "/contribute/note?step=extern"], ["lottery", "/contribute/hospital?step=lottery"], ["elective", "/contribute/elective"]])(
   "an empty %s step invites a contribution only when contributing is on",
   (step, href) => {
     const { unmount } = view(step);

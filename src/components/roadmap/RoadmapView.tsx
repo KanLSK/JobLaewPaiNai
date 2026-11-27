@@ -31,10 +31,10 @@ const GUIDE: Record<string, string> = {
 
 /** The form that fits a step, with the step already chosen where the form asks for it. */
 function contributeHref(step: Step) {
-  if (step.stage === "elective") return "/contribute?kind=elective";
-  if (step.parentId === "intern") return `/contribute?kind=hospital&step=${step.id}`;
-  if (step.id === "intern") return "/contribute?kind=hospital";
-  return `/contribute?kind=note&step=${step.id}`;
+  if (step.stage === "elective") return "/contribute/elective";
+  if (step.parentId === "intern") return `/contribute/hospital?step=${step.id}`;
+  if (step.id === "intern") return "/contribute/hospital";
+  return `/contribute/note?step=${step.id}`;
 }
 
 interface Props {

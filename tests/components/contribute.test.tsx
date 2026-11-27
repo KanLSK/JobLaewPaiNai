@@ -1,40 +1,71 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
-import ContributePage from "@/app/(site)/contribute/page";
+import ContributePage from "@/app/(site)/contribute/(chooser)/page";
+import ContributeKindPage from "@/app/(site)/contribute/[kind]/page";
 import { ContributeForm } from "@/components/contribute/ContributeForm";
 
-vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
+vi.mock("next/navigation", () => ({
+  redirect: (to: string) => { throw new Error(`redirect:${to}`); },
+  notFound: () => { throw new Error("notFound"); },
+}));
 vi.mock("next/headers", () => ({ headers: vi.fn(), cookies: vi.fn() }));
 vi.mock("@/auth", () => ({ auth: async () => null }));
-afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
+afterEach(() => { cleanup(); vi.unstubAllEnvs(); vi.restoreAllMocks(); });
 
-test("the page says so while the database is not set up", async () => {
+const configured = () => { vi.stubEnv("DATA_SOURCE", "mongodb"); vi.stubEnv("MONGODB_URI", "mongodb://unused"); };
+const chooser = async (query: Record<string, string> = {}) => renderToStaticMarkup(await ContributePage({ searchParams: Promise.resolve(query) }));
+const form = (kind: "elective" | "hospital" | "note", step?: string) =>
+  render(<ContributeForm action={async () => null} hospitals={["ศิริราช"]} kind={kind} initialStep={step} />);
+
+test("the pages say so while the database is not set up", async () => {
   vi.stubEnv("DATA_SOURCE", "");
-  expect(renderToStaticMarkup(await ContributePage({ searchParams: Promise.resolve({}) }))).toContain("ยังไม่เปิดใช้งาน");
+  expect(await chooser()).toContain("ยังไม่เปิดใช้งาน");
+  const out = await ContributeKindPage({ params: Promise.resolve({ kind: "note" }), searchParams: Promise.resolve({}) });
+  expect(renderToStaticMarkup(out)).toContain("ยังไม่เปิดใช้งาน");
 });
 
-test("three forms, a consent box, and hospital suggestions", () => {
-  render(<ContributeForm action={async () => null} hospitals={["ศิริราช"]} initialKind="elective" />);
-  for (const tab of ["Elective", "โรงพยาบาลใช้ทุน", "เส้นทางอื่น"]) expect(screen.getByRole("button", { name: tab })).toBeTruthy();
-  expect(screen.getAllByText(/ไม่มีชื่อบุคคล เบอร์ติดต่อ หรือข้อมูลผู้ป่วย/)).toHaveLength(3); // one per form
+test("the first page is three big choices with pictures, and no form", async () => {
+  configured();
+  const out = await chooser();
+  for (const kind of ["elective", "hospital", "note"]) expect(out).toContain(`href="/contribute/${kind}"`);
+  expect(out.split("<svg").length - 1).toBe(3);
+  expect(out).toContain("aspect-square");
+  expect(out).not.toContain("<form");
+});
+
+test("old links with ?kind= still arrive at the form", async () => {
+  configured();
+  await expect(chooser({ kind: "hospital", step: "lottery" })).rejects.toThrow("redirect:/contribute/hospital?step=lottery");
+});
+
+test("an unknown kind is not a page", async () => {
+  await expect(ContributeKindPage({ params: Promise.resolve({ kind: "nope" }), searchParams: Promise.resolve({}) })).rejects.toThrow("notFound");
+});
+
+test("each form has its own fields, consent and hospital suggestions", () => {
+  form("elective");
+  expect(screen.getByText(/ไม่มีชื่อบุคคล เบอร์ติดต่อ หรือข้อมูลผู้ป่วย/)).toBeTruthy();
   const hospital = screen.getByRole("combobox", { name: /โรงพยาบาล/ }) as HTMLInputElement;
   expect(hospital.required).toBe(true);
   expect(document.getElementById(hospital.getAttribute("list")!)!.innerHTML).toContain("ศิริราช");
-  fireEvent.click(screen.getByRole("button", { name: "เส้นทางอื่น" }));
-  expect(screen.getByRole("combobox", { name: /เส้นทาง/ })).toBeTruthy();
+  expect(screen.queryByRole("combobox", { name: /Track/ })).toBeNull();
 });
 
 test("a link from the roadmap preselects the step", () => {
-  render(<ContributeForm action={async () => null} hospitals={[]} initialKind="hospital" initialStep="lottery" />);
+  form("hospital", "lottery");
   expect((screen.getByRole("combobox", { name: /Track/ }) as HTMLSelectElement).value).toBe("lottery");
 });
 
-test("typed text survives a look at another tab", () => {
-  render(<ContributeForm action={async () => null} hospitals={[]} initialKind="elective" />);
-  const review = () => screen.getByRole("textbox", { name: "รีวิว Elective" }) as HTMLTextAreaElement;
-  fireEvent.change(review(), { target: { value: "เขียนยาวมาก" } });
-  fireEvent.click(screen.getByRole("button", { name: "เส้นทางอื่น" }));
-  fireEvent.click(screen.getByRole("button", { name: "Elective" }));
-  expect(review().value).toBe("เขียนยาวมาก");
+test("going back to the choices asks first only if something was typed", () => {
+  const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+  form("note");
+  const back = screen.getByRole("link", { name: /เลือกประเภทอื่น/ });
+  expect(back.getAttribute("href")).toBe("/contribute");
+  back.addEventListener("click", (e) => e.preventDefault()); // jsdom cannot navigate
+  fireEvent.click(back);
+  expect(confirm).not.toHaveBeenCalled();
+  fireEvent.input(screen.getByRole("textbox", { name: "หัวข้อ" }), { target: { value: "x" } });
+  expect(fireEvent.click(back)).toBe(false);
+  expect(confirm).toHaveBeenCalledOnce();
 });

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { KINDS } from "@/components/contribute/Chooser";
 import { ContributeForm } from "@/components/contribute/ContributeForm";
 import { requireStudent } from "@/lib/auth/session";
 import { getRepository } from "@/lib/data/repository";
 import { mongoConfigured } from "@/lib/entries";
-import type { Kind } from "@/lib/entries/types";
-import { sendContribution } from "./actions";
+import { sendContribution } from "../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "เพิ่มรีวิว · จบแล้วไปไหน" };
@@ -21,24 +22,28 @@ async function hospitalNames() {
   }
 }
 
-export default async function ContributePage({ searchParams }: { searchParams: Promise<{ kind?: string | string[]; step?: string | string[] }> }) {
+interface Props {
+  params: Promise<{ kind: string }>;
+  searchParams: Promise<{ step?: string | string[] }>;
+}
+
+export default async function ContributeKindPage({ params, searchParams }: Props) {
   await requireStudent();
-  const { kind, step } = await searchParams;
-  const initialKind: Kind = kind === "hospital" || kind === "note" ? kind : "elective";
+  const { kind } = await params;
+  if (kind !== "elective" && kind !== "hospital" && kind !== "note") notFound();
+  const { step } = await searchParams;
+
   return (
     <div className="mx-auto max-w-2xl pb-10">
-      <h1 className="mb-2 text-3xl font-bold">เพิ่มรีวิว</h1>
+      <h1 className="mb-2 text-3xl font-bold">{KINDS[kind].title}</h1>
       {mongoConfigured(process.env) ? (
-        <>
-          <p className="mb-4 text-muted">แบ่งปันประสบการณ์ให้รุ่นน้อง ทุกรายการจะถูกตรวจก่อนแสดงบนเว็บ</p>
-          <ContributeForm
-            key={`${initialKind}-${step}`}
-            action={sendContribution}
-            hospitals={await hospitalNames()}
-            initialKind={initialKind}
-            initialStep={typeof step === "string" ? step : undefined}
-          />
-        </>
+        <ContributeForm
+          key={`${kind}-${step}`}
+          action={sendContribution}
+          hospitals={kind === "note" ? [] : await hospitalNames()}
+          kind={kind}
+          initialStep={typeof step === "string" ? step : undefined}
+        />
       ) : (
         <p className="text-muted">ยังไม่เปิดใช้งาน</p>
       )}
