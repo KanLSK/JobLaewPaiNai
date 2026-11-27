@@ -30,10 +30,12 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
       <Spine />
 
       <section aria-label="ใช้ทุน" className="grid w-full justify-items-center md:grid-cols-[1fr_16rem_1fr] md:items-center md:gap-x-8">
-        <div className="md:col-start-2 md:row-start-1 md:w-full">
+        <div className="relative md:col-start-2 md:row-start-1 md:flex md:w-full md:items-center md:self-stretch">
+          {/* Carries the spine past the hub, above and below. */}
+          <div aria-hidden className="absolute inset-y-0 left-1/2 hidden -translate-x-1/2 border-l-4 border-dotted border-ink md:block" />
           <div className="mx-auto w-64 max-w-full">{node("intern")}</div>
         </div>
-        <Branch label={`${TRACKS.length} tracks`} defaultOpen={holds("intern")} className="md:contents">
+        <Branch label={`${TRACKS.length} tracks`} defaultOpen={holds("intern")} className="md:contents" desktop="md:contents">
           <div className="grid gap-3 md:contents">
             {list(TRACKS.slice(0, 3), "grid gap-3 md:col-start-1 md:row-start-1", `relative ${LINK} md:after:-right-8`)}
             {list(TRACKS.slice(3), "grid gap-3 md:col-start-3 md:row-start-1", `relative ${LINK} md:after:-left-8`)}

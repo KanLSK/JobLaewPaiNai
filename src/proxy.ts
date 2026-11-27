@@ -1,15 +1,20 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { allowedDomains, devBypassEnabled, isAllowedEmail } from "@/lib/auth/allowed";
 
-export default auth((request) => {
-  if (devBypassEnabled(process.env)) return NextResponse.next();
+const guard = auth((request) => {
   if (isAllowedEmail(request.auth?.user?.email, allowedDomains())) return NextResponse.next();
   const target = new URL("/signin", request.nextUrl);
   target.searchParams.set("callbackUrl", request.nextUrl.pathname + request.nextUrl.search);
   return NextResponse.redirect(target);
-});
+}) as unknown as (request: NextRequest, event: NextFetchEvent) => Promise<Response>;
+
+export default function proxy(request: NextRequest, event: NextFetchEvent) {
+  // Decided before Auth.js runs, so a local preview needs no secret.
+  if (devBypassEnabled(process.env)) return NextResponse.next();
+  return guard(request, event);
+}
 
 export const config = {
-  matcher: ["/((?!signin$|api/auth/|_next/static|_next/image|robots\\.txt$|favicon\\.ico$).*)"],
+  matcher: ["/((?!signin$|api/auth/|_next/static|_next/image|robots\\.txt$|icon\\.svg$|favicon\\.ico$).*)"],
 };

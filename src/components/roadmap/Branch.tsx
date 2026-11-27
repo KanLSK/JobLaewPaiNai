@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 
 /** Always open from `md` up; collapsible on phones. */
-export function Branch({ label, defaultOpen, className = "", children }: { label: string; defaultOpen: boolean; className?: string; children: React.ReactNode }) {
+export function Branch({ label, defaultOpen, className = "", desktop = "md:block", children }: { label: string; defaultOpen: boolean; className?: string; desktop?: "md:block" | "md:contents"; children: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   const id = useId();
   return (
@@ -17,7 +17,7 @@ export function Branch({ label, defaultOpen, className = "", children }: { label
       >
         {open ? "ซ่อน" : "ดู"} {label}
       </button>
-      <div id={id} className={`mt-3 md:mt-0 md:block ${open ? "block" : "hidden"}`}>
+      <div id={id} className={`mt-3 md:mt-0 ${desktop} ${open ? "block" : "hidden"}`}>
         {children}
       </div>
     </div>
