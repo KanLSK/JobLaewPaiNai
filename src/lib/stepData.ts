@@ -1,12 +1,17 @@
 import { ALL_STEPS, findStep } from "@/config/pathway";
-import type { ElectiveReview, HospitalReview } from "@/lib/data/types";
+import type { ElectiveReview, HospitalReview, NoteEntry } from "@/lib/data/types";
 
 export interface StepContent {
   electives: ElectiveReview[];
   hospitals: HospitalReview[];
+  notes: NoteEntry[];
 }
 
-export function contentFor(stepId: string, electives: ElectiveReview[], hospitals: HospitalReview[]): StepContent {
+export function contentFor(stepId: string, electives: ElectiveReview[], hospitals: HospitalReview[], notes: NoteEntry[] = []): StepContent {
+  return { ...reviewsFor(stepId, electives, hospitals), notes: notes.filter((n) => n.stepId === stepId) };
+}
+
+function reviewsFor(stepId: string, electives: ElectiveReview[], hospitals: HospitalReview[]): Omit<StepContent, "notes"> {
   const step = findStep(stepId);
   if (stepId === "elective") return { electives, hospitals: [] };
   if (stepId === "intern") return { electives: [], hospitals };
@@ -23,11 +28,11 @@ export function contentFor(stepId: string, electives: ElectiveReview[], hospital
   return { electives: [], hospitals: [] };
 }
 
-export function countByStep(electives: ElectiveReview[], hospitals: HospitalReview[]): Record<string, number> {
+export function countByStep(electives: ElectiveReview[], hospitals: HospitalReview[], notes: NoteEntry[] = []): Record<string, number> {
   return Object.fromEntries(
     ALL_STEPS.map((step) => {
-      const content = contentFor(step.id, electives, hospitals);
-      return [step.id, content.electives.length + content.hospitals.length];
+      const content = contentFor(step.id, electives, hospitals, notes);
+      return [step.id, content.electives.length + content.hospitals.length + content.notes.length];
     }),
   );
 }

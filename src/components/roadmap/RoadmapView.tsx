@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { findStep, type StageId } from "@/config/pathway";
+import { findStep, type StageId, type Step } from "@/config/pathway";
 import { ElectiveCards } from "@/components/reviews/ElectiveCards";
 import { HospitalCard } from "@/components/reviews/HospitalCard";
 import { Empty } from "@/components/reviews/Results";
-import type { ElectiveReview, HospitalReview } from "@/lib/data/types";
+import { Card } from "@/components/ui/Card";
+import type { ElectiveReview, HospitalReview, NoteEntry } from "@/lib/data/types";
 import { contentFor, countByStep } from "@/lib/stepData";
 import { Roadmap } from "./Roadmap";
 import { StepPanel } from "./StepPanel";
@@ -28,16 +29,33 @@ const GUIDE: Record<string, string> = {
   resident: "eligibility",
 };
 
+/** The form that fits a step, with the step already chosen where the form asks for it. */
+function contributeHref(step: Step) {
+  if (step.stage === "elective") return "/contribute?kind=elective";
+  if (step.parentId === "intern") return `/contribute?kind=hospital&step=${step.id}`;
+  if (step.id === "intern") return "/contribute?kind=hospital";
+  return `/contribute?kind=note&step=${step.id}`;
+}
+
+interface Props {
+  stepId?: string;
+  electives: ElectiveReview[];
+  hospitals: HospitalReview[];
+  notes?: NoteEntry[];
+  canContribute?: boolean;
+}
+
 /** Only the selected step's reviews are rendered into the panel. */
-export function RoadmapView({ stepId, electives, hospitals }: { stepId?: string; electives: ElectiveReview[]; hospitals: HospitalReview[] }) {
+export function RoadmapView({ stepId, electives, hospitals, notes = [], canContribute = false }: Props) {
   const step = stepId ? findStep(stepId) : null;
-  const content = step ? contentFor(step.id, electives, hospitals) : null;
+  const content = step ? contentFor(step.id, electives, hospitals, notes) : null;
+  const total = content ? content.electives.length + content.hospitals.length + content.notes.length : 0;
   const signpost = step && ["graduate", "resident", "other"].includes(step.id);
 
   return (
     <>
       <div inert={step !== null}>
-        <Roadmap counts={countByStep(electives, hospitals)} selected={step} />
+        <Roadmap counts={countByStep(electives, hospitals, notes)} selected={step} />
       </div>
       {step && content && (
         <StepPanel key={step.id} stepId={step.id} title={step.parentId === "elective" ? `Elective · ${step.label}` : step.label}>
@@ -54,7 +72,13 @@ export function RoadmapView({ stepId, electives, hospitals }: { stepId?: string;
               <ElectiveCards reviews={content.electives} closeAllHref="/" />
             </div>
           )}
-          {!signpost && content.electives.length + content.hospitals.length === 0 && <Empty>รอข้อมูล</Empty>}
+          {content.notes.map((note) => (
+            <Card key={note.id} stage={step.stage} header={<h3 className="font-bold break-words">{note.title}</h3>}>
+              <p className="text-sm leading-relaxed break-words whitespace-pre-line">{note.text}</p>
+            </Card>
+          ))}
+          {!signpost && total === 0 && <Empty>รอข้อมูล</Empty>}
+          {canContribute && total === 0 && <Link href={contributeHref(step)} className="block text-sm font-semibold underline">เพิ่มข้อมูลของคุณ</Link>}
         </StepPanel>
       )}
     </>

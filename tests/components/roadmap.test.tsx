@@ -66,3 +66,22 @@ test("a step with reference material links to the guide", () => {
   view("lottery");
   expect(screen.getByRole("link", { name: /อ่านในคู่มือ/ }).getAttribute("href")).toBe("/guide#register");
 });
+
+test("a step shows its notes", () => {
+  render(<RoadmapView stepId="extern" electives={[]} hospitals={[]} notes={[{ id: "n", stepId: "extern", title: "หัวข้อโน้ต", text: "เนื้อหาโน้ต" }]} />);
+  const dialog = screen.getByRole("dialog");
+  expect(dialog.textContent).toContain("หัวข้อโน้ต");
+  expect(dialog.textContent).toContain("เนื้อหาโน้ต");
+  expect(dialog.textContent).not.toContain("รอข้อมูล");
+});
+
+test.each([["extern", "/contribute?kind=note&step=extern"], ["lottery", "/contribute?kind=hospital&step=lottery"], ["elective", "/contribute?kind=elective"]])(
+  "an empty %s step invites a contribution only when contributing is on",
+  (step, href) => {
+    const { unmount } = view(step);
+    expect(screen.queryByRole("link", { name: /เพิ่มข้อมูล/ })).toBeNull();
+    unmount();
+    render(<RoadmapView stepId={step} electives={[]} hospitals={[]} canContribute />);
+    expect(screen.getByRole("link", { name: /เพิ่มข้อมูล/ }).getAttribute("href")).toBe(href);
+  },
+);

@@ -1,17 +1,20 @@
 import path from "node:path";
 import { JWT } from "google-auth-library";
+import { getStore } from "@/lib/entries";
 import { buildAliases } from "./aliases";
 import { cached } from "./cache";
 import { ALIAS_COLUMNS, HOSPITAL_COLUMNS, SI129_COLUMNS, SI130_COLUMNS } from "./columns";
 import { csvSource } from "./csvSource";
 import { parseHospitals, parseSI129, parseSI130 } from "./parse";
+import { mongoRepository } from "./mongoRepository";
 import { sheetsSource } from "./sheetsSource";
 import { fileRepository } from "./snapshot";
-import type { ColumnSpec, ElectiveReview, HospitalReview, TableId, TableSource } from "./types";
+import type { ColumnSpec, ElectiveReview, HospitalReview, NoteEntry, TableId, TableSource } from "./types";
 
 export interface ReviewRepository {
   getElectiveReviews(): Promise<ElectiveReview[]>;
   getHospitalReviews(): Promise<HospitalReview[]>;
+  getNotes(): Promise<NoteEntry[]>;
 }
 
 const TEN_MINUTES = 10 * 60 * 1000;
@@ -33,6 +36,8 @@ export function createRepository(source: TableSource, opts: { approveAll?: boole
       const [a, rows] = await Promise.all([aliases(), read("hospitals", HOSPITAL_COLUMNS)]);
       return parseHospitals(rows, a);
     }, ttl),
+    // Notes only come in through the website forms.
+    getNotes: async () => [],
   };
 }
 
@@ -90,10 +95,11 @@ export function getRepository(): ReviewRepository {
   if (!repository) {
     // With no setting the site runs on its own from the file shipped with it.
     const kind = process.env.DATA_SOURCE || "file";
-    if (kind === "file") repository = fileRepository(path.join(process.cwd(), "content", "reviews.json"));
+    if (kind === "mongodb") repository = mongoRepository(getStore());
+    else if (kind === "file") repository = fileRepository(path.join(process.cwd(), "content", "reviews.json"));
     else if (kind === "csv" || kind === "sheets")
       repository = createRepository(kind === "csv" ? localCsv() : googleSheet(), { approveAll: approveAllEnabled(process.env) });
-    else throw new Error(`DATA_SOURCE must be "file", "csv" or "sheets"`);
+    else throw new Error(`DATA_SOURCE must be "file", "mongodb", "csv" or "sheets"`);
   }
   return repository;
 }

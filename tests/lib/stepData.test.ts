@@ -21,3 +21,10 @@ test("counts per step", () => {
   const counts = countByStep(electives, hospitals);
   expect(counts).toMatchObject({ elective: 2, intern: 2, lottery: 1, surgery: 2, extern: 0, research: 0 });
 });
+
+test("a note belongs to its step and is counted there", () => {
+  const notes = [{ id: "n", stepId: "extern", title: "t", text: "x" }];
+  expect(countByStep([], [], notes).extern).toBe(1);
+  expect(contentFor("extern", [], [], notes).notes).toEqual(notes);
+  expect(contentFor("lottery", [], [], notes).notes).toEqual([]);
+});

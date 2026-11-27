@@ -28,5 +28,6 @@ export function fileRepository(file: string): ReviewRepository {
   return {
     getElectiveReviews: async () => (await load()).electives,
     getHospitalReviews: async () => (await load()).hospitals,
+    getNotes: async () => [],
   };
 }
