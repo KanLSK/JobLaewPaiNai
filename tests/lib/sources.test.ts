@@ -76,3 +76,26 @@ test("sheets source fails on a non-200 answer", async () => {
   const source = sheetsSource({ sheetId: "S", tabs, getToken: async () => "t", fetchImpl: (async () => new Response("no", { status: 403 })) as typeof fetch });
   await expect(source.readTable("si130", [{ key: "a", header: "a" }])).rejects.toThrow("403");
 });
+
+test("sheets source never reads a hospital response row to find the headers", async () => {
+  const requested: string[] = [];
+  const fakeFetch = (async (url: string | URL) => {
+    const ranges = new URL(url).searchParams.getAll("ranges");
+    requested.push(...ranges);
+    const reply = ranges[0].endsWith("!A1:A5")
+      ? [{ values: [["title"], [], ["โรงพยาบาลใช้ทุน (ข้อมูลเท่าที่ทราบ)"]] }]
+      : ranges[0].endsWith("!3:4")
+        ? [{ values: [["โรงพยาบาลใช้ทุน (ข้อมูลเท่าที่ทราบ)", "x", "approved"], ["", "โอกาส"]] }]
+        : [{ values: [["รพ ก"]] }, { values: [["5"]] }, { values: [["yes"]] }];
+    return new Response(JSON.stringify({ valueRanges: reply }));
+  }) as typeof fetch;
+
+  const rows = await sheetsSource({ sheetId: "S", tabs, getToken: async () => "t", fetchImpl: fakeFetch }).readTable("hospitals", [
+    { key: "name", header: "โรงพยาบาลใช้ทุน (ข้อมูลเท่าที่ทราบ)" },
+    { key: "s", header: "โอกาส" },
+    { key: "approved", header: "approved", optional: true },
+  ]);
+
+  expect(requested).toEqual(["'hospitals'!A1:A5", "'hospitals'!3:4", "'hospitals'!A5:A", "'hospitals'!B5:B", "'hospitals'!C5:C"]);
+  expect(rows).toEqual([{ name: "รพ ก", s: "5", approved: "yes" }]);
+});
