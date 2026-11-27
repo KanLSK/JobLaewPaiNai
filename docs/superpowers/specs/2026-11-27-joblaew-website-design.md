@@ -67,6 +67,7 @@ A playful, modern website that lets Mahidol students see the paths a medical stu
 ```
 
 - The outline lists the 6 tracks under "แพทย์เฉพาะทาง". **(my call)** All paths pass through ใช้ทุน/intern and then split into resident or other careers.
+- Elective branches by ward department (added 2026-11-27 at your request). Subspecialties count towards the main department; wards that fit none sit under อื่นๆ. Only departments with reviews are drawn.
 - Tracks, specialties and other careers come from your outline CSV, with the same names. They live in one config file in the code **(my call)**.
 - Vertical spine with side branches on desktop; one column with collapsible branches on phones. Built with HTML/SVG, no diagram library.
 - Clicking a step opens a pop-up in the middle of the screen with a summary and its reviews (changed 2026-11-27 from a side panel, at your request). Each step has its own link that can be shared.

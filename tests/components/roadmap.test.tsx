@@ -44,3 +44,11 @@ test("the pop-up sits in the middle and stops the page scrolling behind it", () 
   unmount();
   expect(document.body.style.overflow).toBe("");
 });
+
+test("elective branches appear only for departments that have reviews", () => {
+  const electives = [{ id: "a", specialtyId: "surgery", sections: [], extra: [], overall: { label: "o", value: 5, max: 5 }, hospital: "x", wardRaw: "CVT", year: "SI130", province: null, threeWords: null }] as never;
+  render(<RoadmapView electives={electives} hospitals={[]} />);
+  expect(node("elective-surgery").getAttribute("href")).toBe("/?step=elective-surgery");
+  expect(node("elective-ent")).toBeNull();
+  expect(node("elective-other")).toBeNull();
+});

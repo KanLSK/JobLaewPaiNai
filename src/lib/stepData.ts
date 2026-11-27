@@ -1,4 +1,4 @@
-import { CAREERS, SPECIALTIES, STAGES, TRACKS, findStep } from "@/config/pathway";
+import { ALL_STEPS, findStep } from "@/config/pathway";
 import type { ElectiveReview, HospitalReview } from "@/lib/data/types";
 
 export interface StepContent {
@@ -10,6 +10,10 @@ export function contentFor(stepId: string, electives: ElectiveReview[], hospital
   const step = findStep(stepId);
   if (stepId === "elective") return { electives, hospitals: [] };
   if (stepId === "intern") return { electives: [], hospitals };
+  if (step?.parentId === "elective") {
+    const department = stepId === "elective-other" ? null : stepId.slice("elective-".length);
+    return { electives: electives.filter((e) => e.specialtyId === department), hospitals: [] };
+  }
   if (step?.parentId === "intern") return { electives: [], hospitals: hospitals.filter((h) => h.trackId === stepId) };
   if (step?.parentId === "resident")
     return {
@@ -21,7 +25,7 @@ export function contentFor(stepId: string, electives: ElectiveReview[], hospital
 
 export function countByStep(electives: ElectiveReview[], hospitals: HospitalReview[]): Record<string, number> {
   return Object.fromEntries(
-    [...STAGES, ...TRACKS, ...SPECIALTIES, ...CAREERS].map((step) => {
+    ALL_STEPS.map((step) => {
       const content = contentFor(step.id, electives, hospitals);
       return [step.id, content.electives.length + content.hospitals.length];
     }),

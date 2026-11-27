@@ -29,7 +29,7 @@ export function RoadmapView({ stepId, electives, hospitals }: { stepId?: string;
         <Roadmap counts={countByStep(electives, hospitals)} selected={step} />
       </div>
       {step && content && (
-        <StepPanel key={step.id} stepId={step.id} title={step.label}>
+        <StepPanel key={step.id} stepId={step.id} title={step.parentId === "elective" ? `Elective · ${step.label}` : step.label}>
           <p className="text-muted">{ABOUT[step.stage]}</p>
           {content.electives.length > 0 && <Link href="/electives" className="block text-sm font-semibold underline">ค้นหาและกรองรีวิว Elective ทั้งหมด</Link>}
           {content.hospitals.length > 0 && <Link href="/hospitals" className="block text-sm font-semibold underline">ค้นหาและกรองโรงพยาบาลใช้ทุน</Link>}

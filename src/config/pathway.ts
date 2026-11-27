@@ -67,8 +67,14 @@ export const CAREERS: Step[] = children("other", [
   ["influencer", "Influencer/non-med"],
 ]);
 
-const ALL = [...STAGES, ...TRACKS, ...SPECIALTIES, ...CAREERS];
+/** Elective wards grouped by department; subspecialties count towards the main one. */
+export const ELECTIVE_DEPARTMENTS: Step[] = children("elective", [
+  ...SPECIALTIES.map((s): [string, string] => [`elective-${s.id}`, s.label]),
+  ["elective-other", "อื่นๆ"],
+]);
+
+export const ALL_STEPS: Step[] = [...STAGES, ...ELECTIVE_DEPARTMENTS, ...TRACKS, ...SPECIALTIES, ...CAREERS];
 
 export function findStep(id: string): Step | null {
-  return ALL.find((step) => step.id === id) ?? null;
+  return ALL_STEPS.find((step) => step.id === id) ?? null;
 }
