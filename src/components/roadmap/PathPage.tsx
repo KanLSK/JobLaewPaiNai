@@ -24,11 +24,11 @@ export function PathPage({ page, stepId, counts, content, canContribute = false 
           <h1 className="text-3xl font-bold">{page.title}</h1>
           <p>{page.intro}</p>
         </div>
-        <nav aria-label="อ่านในคู่มือ" className="flex flex-wrap justify-center gap-2 text-sm font-semibold">
+        {page.guides.length > 0 && <nav aria-label="อ่านในคู่มือ" className="flex flex-wrap justify-center gap-2 text-sm font-semibold">
           {page.guides.map(([label, id]) => (
             <Link key={id} href={guideHref(id)} className="rounded-full border-2 border-ink bg-white px-3 py-1 hover:bg-graduate">{label} →</Link>
           ))}
-        </nav>
+        </nav>}
         <ul className="grid grid-cols-2 items-start gap-3 md:grid-cols-3">
           {page.steps.map((s) => (
             <li key={s.id}>

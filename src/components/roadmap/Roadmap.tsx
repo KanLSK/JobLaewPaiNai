@@ -134,7 +134,6 @@ export function Roadmap({ counts, selected }: { counts: Record<string, number>; 
           <span aria-hidden className="absolute -top-6 left-1/2 hidden h-6 w-[3px] -translate-x-1/2 bg-ink lg:block" />
           <Group label="ไม่ใช้ทุน (จ่ายค่าปรับ)" className="bg-intern">
             {list(NO_SERVICE_PAGE.steps, "grid w-full grid-cols-2 gap-3 lg:grid-cols-1")}
-            <Link href="/no-service" className="text-sm font-semibold underline">ข้อมูลรายได้และภาษี →</Link>
           </Group>
         </section>
       </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IncomeFlow } from "./IncomeFlow";
 import { SECTIONS, TOPICS, type SectionId, type Topic } from "./topics";
 const LEVELS = [
   ["รพ.สต.", "โรงพยาบาลส่งเสริมสุขภาพตำบล", "ปฐมภูมิ (พื้นฐาน)", "หน่วยบริการในชุมชน ให้บริการพื้นฐานและส่งเสริมสุขภาพ"],
@@ -417,6 +418,7 @@ const BODY: Record<SectionId, { note?: string; content: React.ReactNode }> = {
     note: "สรุปจากโพสต์ของเพจ “หมอยุ่งอยากมีเวลา” เป็นข้อมูลเบื้องต้น โปรดตรวจกับกรมสรรพากรก่อนยื่นภาษี",
     content: (
       <>
+        <IncomeFlow />
         {TAX.map(({ title, points }) => (
           <div key={title} className={box}>
             <h3 className="mb-2 font-bold">{title}</h3>

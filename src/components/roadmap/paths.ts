@@ -30,8 +30,6 @@ export const NO_SERVICE_PAGE: Path = {
   // แพทย์ต่างประเทศ is still a track for hospital reviews; here it is one of the four paths.
   steps: [...TRACKS.filter((t) => t.id === "abroad"), ...NO_SERVICE],
   color: "bg-intern",
-  guides: [
-    ["เปรียบเทียบรายได้", "pay"],
-    ["ภาษีแพทย์", "tax"],
-  ],
+  // Pay and tax cover state hospitals too, so they sit in the top menu, not under this path.
+  guides: [],
 };

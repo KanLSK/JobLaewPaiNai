@@ -40,3 +40,13 @@ test("links from elsewhere point at the right page and section", () => {
 test("an unknown topic is not a page", async () => {
   await expect(topic("nope")).rejects.toThrow("notFound");
 });
+
+test("the tax section draws which kind of income each kind of work is", async () => {
+  const html = await topic("money");
+  const flow = html.slice(html.indexOf('id="income-flow"'), html.indexOf('id="income-flow-end"'));
+  const between = (from: string, to?: string) => flow.slice(flow.indexOf(from), to ? flow.indexOf(to) : undefined);
+  const kinds = (part: string) => [...part.matchAll(/เงินได้ (40\(\d\))/g)].map((m) => m[1]);
+  expect(kinds(between("แพทย์ รพ.รัฐ", "แพทย์เอกชน"))).toEqual(["40(1)", "40(2)", "40(6)"]);
+  expect(kinds(between("แพทย์เอกชน"))).toEqual(["40(2)", "40(6)"]);
+  for (const text of ["เงินเดือน, เงิน พตส., P4P, เงินเวร", "ออกตรวจคลินิกพิเศษร่วมด้วย", "Full time / Part time", "ได้ตามการันตี", "มีสัญญาเช่าพื้นที่"]) expect(flow).toContain(text);
+});

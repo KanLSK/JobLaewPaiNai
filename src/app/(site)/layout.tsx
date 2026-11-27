@@ -10,6 +10,7 @@ const NAV = [
   ["/", "เส้นทาง"],
   ["/electives", "Elective"],
   ["/hospitals", "โรงพยาบาลใช้ทุน"],
+  ["/guide/money", "รายได้และภาษี"],
   ["/guide", "คู่มือ"],
 ] as const;
 
